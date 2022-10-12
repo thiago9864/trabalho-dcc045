@@ -1,0 +1,28 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: build",
+            "command": "C:\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${workspaceFolder}/*.cpp",
+                "${workspaceFolder}/*.c", // this should build c and cpp at the same time.
+                "-o",
+                "${workspaceFolder}\\main.exe",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "compiler: C:\\MinGW\\bin\\g++.exe"
+        }
+    ],
+    "version": "2.0.0"
+}
