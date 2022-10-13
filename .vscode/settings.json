@@ -68,6 +68,7 @@
         "lexical_analyzer.h": "c",
         "symbol_table.h": "c",
         "lexicalanalyzer.h": "c",
-        "symboltable.h": "c"
+        "symboltable.h": "c",
+        "cexport.h": "c"
     }
 }

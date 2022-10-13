@@ -1,0 +1,76 @@
+-
+->
+.
+,
+;
+:
+!
+!=
+( 
+) 
+[
+]
+{
+}
+*
+/
+&
+&&
+%
++
+<
+<=
+=
+==
+>
+>=
+|
+||
+"Numeros Inteiros"
+123
+12e3
+12E3
+12e+3
+12E+3
+12.
+1.E2
+1.e3
+1.e
+1.E
+"Numeros Reais"
+1.23
+.123
+1.2e3
+1.2E3
+.12e3
+.12E3
+12e-3
+12E-3
+1.2e-3
+1.2E-3
+.12e-3
+.12E-3
+'a'
+'A'
+// Tem que ignorar esse comentário de linha
+/*
+Tem que ignorar esse comentário em bloco
+*/
+// Não pode ter limite pro tamanho do literal de aspas duplas
+"The licenses for most software and other practical works are designed to take away your freedom to share and change the works. By contrast, the GNU General Public License is intended to guarantee your freedom to share and change all versions of a program--to make sure it remains free software for all its users. We, the Free Software Foundation, use the GNU General Public License for most of our software; it applies also to any other work released this way by its authors. You can apply it to your programs, too."
+// Nem pra um literal numérico
+321354135465302103154156415453415514534532411545454523
+321354135465302103154156415453415514534532411545454523.321354135465302103154156415453415514534532411545454523e+321354135465302103154156415453415514534532411545454523
+// Statements
+IF
+ELSE
+BREAK
+CASE
+TRY
+CATCH
+PRINT
+READLN
+RETURN
+SWITCH
+THROW
+WHILE

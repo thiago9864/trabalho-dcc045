@@ -1,0 +1,39 @@
+"*** Espera erro 'Digit expected after sign' ***"
+
+"Numeros Inteiros"
+12e+
+12E+
+
+"Numeros Reais"
+12e-
+12E-
+1.2e-
+1.2E-
+.12e-
+
+"*** Espera erro 'Digit or sign expected after exponent ***"
+
+"Numeros Inteiros"
+12e
+12E
+
+"Numeros Reais"
+1.2e
+1.2E
+.12e
+.12E
+
+"*** Espera erro 'Invalid escape sequence character ***"
+
+"um literal com um \z"
+
+"*** Espera erro 'Invalid char error' ***"
+🔥
+
+"*** Espera erro 'Char literals can have only one char' ***"
+
+'uma string ao inves de um literal'
+
+"*** Espera erro 'Unexpected end of file in literal' ***"
+
+"Uma string que vai acabar..

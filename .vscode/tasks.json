@@ -3,11 +3,13 @@
         {
             "type": "cppbuild",
             "label": "C/C++: build",
-            "command": "C:\\MinGW\\bin\\g++.exe",
+            "command": "g++.exe",
             "args": [
+                "-fdiagnostics-color=always",
                 "-g",
-                "${workspaceFolder}/*.cpp",
-                "${workspaceFolder}/*.c", // this should build c and cpp at the same time.
+                "-ggdb",
+                "${workspaceFolder}\\*.cpp",
+                "${workspaceFolder}\\*.c", // this should build c and cpp at the same time.
                 "-o",
                 "${workspaceFolder}\\main.exe",
             ],
@@ -21,7 +23,29 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "compiler: C:\\MinGW\\bin\\g++.exe"
+            "detail": "compiler: g++.exe"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe arquivo de build ativo",
+            "command": "g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-ggdb",
+                "${workspaceFolder}\\*.cpp",
+                "${workspaceFolder}\\*.c", // this should build c and cpp at the same time.
+                "-o",
+                "${workspaceFolder}\\main.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "Tarefa gerada pelo Depurador."
         }
     ],
     "version": "2.0.0"
