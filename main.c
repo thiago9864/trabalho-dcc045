@@ -10,7 +10,7 @@ int main()
     FILE *fp;
     char ch;
 
-   fp = fopen("ArquivoEntrada.txt", "r");
+   fp = fopen("test/ArquivoEntrada.txt", "r");
    if (NULL == fp) {
         printf("File can't be opened \n");
     }
