@@ -89,18 +89,27 @@ int nextToken()
     {
         if (notConsumeChar == 0)
         {
-            //prevChar = currentChar;
+            // prevChar = currentChar;
             currentChar = getNextChar();
-            //printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
+            // printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
         else
         {
-            //currentChar = prevChar;
+            // currentChar = prevChar;
             notConsumeChar = 0;
-            //printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
+            // printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
 
-        
+        if (currentChar == '\n')
+        {
+            sourceCodeLine++;
+            sourceCodeColumn = 0;
+        }
+        else
+        {
+            sourceCodeColumn++;
+        }
+
         //  Switch between DFA states using only the number part of their names
         //  q0, q1, q2 turn to 0, 1, 2
         switch (dfaState)
@@ -117,7 +126,7 @@ int nextToken()
             {
                 // Change to q1
                 dfaState = 1;
-                
+
                 buildLexeme(currentChar);
                 break;
             }
@@ -379,14 +388,14 @@ int nextToken()
             // ERROR: Digit expected after sign.
             // Restart automaton
             dfaState = 0;
-            //writeError(LEXICAL_ERROR, "Digit expected after sign");
+            writeLexicalError(DIGIT_EXPECTED_ERROR, sourceCodeLine, sourceCodeColumn);
             clearLexeme();
             break;
         case 22:
             // ERROR: Digit or sign expected after exponent.
             // Restart automaton
             dfaState = 0;
-            //writeError(LEXICAL_ERROR, "Digit or sign expected after exponent");
+            writeLexicalError(DIGIT_OR_SIGN_EXPECTED_ERROR, sourceCodeLine, sourceCodeColumn);
             clearLexeme();
             break;
         case 23:
@@ -554,13 +563,13 @@ int nextToken()
             // ERROR: Unexpected EOF in a comment
             token = END_OF_FILE;
             done = 1;
-            //writeError(LEXICAL_ERROR, "Unexpected end of file in literal");
+            writeLexicalError(EOF_LITERAL_ERROR, sourceCodeLine, sourceCodeColumn);
             break;
         case 35:
             // ERROR: Invalid escape sequence character.
             // Restart automaton
             dfaState = 0;
-            //writeError(LEXICAL_ERROR, "Invalid escape sequence character");
+            writeLexicalError(INVALID_ESCAPE_ERROR, sourceCodeLine, sourceCodeColumn);
             clearLexeme();
             break;
         case 36:
@@ -664,7 +673,7 @@ int nextToken()
             // ERROR: Unexpected EOF in a comment
             token = END_OF_FILE;
             done = 1;
-            //writeError(LEXICAL_ERROR, "Unexpected end of file in block comment");
+            writeLexicalError(EOF_COMMENT_BLOCK_ERROR, sourceCodeLine, sourceCodeColumn);
             break;
         case 48:
             if (currentChar == EOF)
@@ -792,7 +801,7 @@ int nextToken()
             // ERROR: Invalid char error
             // Restart automaton
             dfaState = 0;
-            //writeError(LEXICAL_ERROR, "Invalid char error");
+            writeLexicalError(INVALID_CHAR_ERROR, sourceCodeLine, sourceCodeColumn);
             clearLexeme();
             break;
         case 67:
@@ -803,7 +812,7 @@ int nextToken()
             // ERROR: Char literals can have only one char
             // Restart automaton
             dfaState = 0;
-            //writeError(LEXICAL_ERROR, "Char literals can have only one char");
+            writeLexicalError(ONE_CHAR_ERROR, sourceCodeLine, sourceCodeColumn);
             clearLexeme();
             break;
         }

@@ -21,8 +21,10 @@ static FILE *inputStreamPointer = NULL;
 static char *fileChunkBuffer = NULL;
 static int fileChunkLength = 0;
 static int fileChunkReadPos = 0;
-//static char prevChar = '\0';
+// static char prevChar = '\0';
 static char currentChar = '\0';
+static int sourceCodeLine = 0;
+static int sourceCodeColumn = 0;
 
 // Token names
 static char const *tokenList[] = {
@@ -48,6 +50,15 @@ static char const *tokenList[] = {
 
     // Primary
     "ID", "NUM", "LITERAL", "FALSE", "TRUE", "ASSIGN", "END_OF_FILE"};
+
+// Error labels
+static char DIGIT_EXPECTED_ERROR[] = "Digit expected after sign";
+static char DIGIT_OR_SIGN_EXPECTED_ERROR[] = "Digit or sign expected after exponent";
+static char EOF_LITERAL_ERROR[] = "Unexpected end of file in literal";
+static char INVALID_ESCAPE_ERROR[] = "Invalid escape sequence character";
+static char EOF_COMMENT_BLOCK_ERROR[] = "Unexpected end of file in block comment";
+static char INVALID_CHAR_ERROR[] = "Invalid char error";
+static char ONE_CHAR_ERROR[] = "Char literals can have only one char";
 
 /**
  * Module constructor

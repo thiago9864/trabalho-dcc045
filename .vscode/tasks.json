@@ -2,16 +2,11 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: build",
-            "command": "g++.exe",
+            "label": "Makefile build",
+            "command": "mingw32-make",
             "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "-ggdb",
-                "${workspaceFolder}\\*.cpp",
-                "${workspaceFolder}\\*.c", // this should build c and cpp at the same time.
-                "-o",
-                "${workspaceFolder}\\main.exe",
+                "-f",
+                "Makefile"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -23,7 +18,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "compiler: g++.exe"
+            "detail": "Executa o makefile com o make do MinGW"
         },
         {
             "type": "cppbuild",
