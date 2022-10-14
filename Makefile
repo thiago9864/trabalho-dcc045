@@ -1,3 +1,4 @@
 run: 
-	cc -o main main.c 
-	./main 
+	gcc -c *.c 
+	g++ *.o -o main
+	 ./main

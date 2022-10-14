@@ -14,19 +14,10 @@ int main()
    if (NULL == fp) {
         printf("File can't be opened \n");
     }
- 
-    printf("Content of this file are \n");
-
-    do {
-        ch = fgetc(fp);
-        printf("%c", ch);
- 
-        // Verifica se o caracter não é EOF;
-        // Se for ele para a leitura.
-    } while (ch != EOF);
- 
-    // Fecha o arquivo
+    
+    lexicalConstructor(fp);
     fclose(fp);
+    lexicalDestructor();
     return 0;
 }
 
