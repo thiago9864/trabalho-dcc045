@@ -35,3 +35,9 @@
 CExport
 main
 build
+
+#Codeblocks
+bin
+obj
+*.depend
+*.layout
