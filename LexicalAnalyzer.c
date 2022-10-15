@@ -128,13 +128,13 @@ void lexicalDestructor()
 
 static char getNextChar()
 {
-    if (feof(inputStreamPointer))
+    if (feof(inputStreamPointer) && fileChunkReadPos >= fileChunkLength)
     {
         return EOF;
     }
 
     // Read a chunk of the file, if data is avaliable
-    if (fileChunkLength == fileChunkReadPos)
+    if (!feof(inputStreamPointer) && fileChunkLength == fileChunkReadPos)
     {
         fileChunkLength = fread(fileChunkBuffer, sizeof(char), FILE_CHUNK_BUFFER_SIZE, inputStreamPointer);
         fileChunkReadPos = 0;

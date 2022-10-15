@@ -8,7 +8,7 @@
 1665595570 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\symboltable.h
 	<iostream>
 
-1665788075 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.c
+1665802239 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.c
 	"ErrorManager.h"
 
 1665726013 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.h
@@ -18,7 +18,7 @@
 1665801774 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.c
 	"LexicalAnalyzer.h"
 
-1665785513 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.h
+1665802031 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.h
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -28,7 +28,7 @@
 
 1665627447 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\tokendefinitions.h
 
-1665796336 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.c
+1665802444 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

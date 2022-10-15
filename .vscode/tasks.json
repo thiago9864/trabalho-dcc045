@@ -2,11 +2,11 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "Makefile build",
+            "label": "MakefileBuild",
             "command": "mingw32-make",
             "args": [
                 "-f",
-                "Makefile"
+                "Makefile.windows.mak"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -21,26 +21,12 @@
             "detail": "Executa o makefile com o make do MinGW"
         },
         {
-            "type": "cppbuild",
-            "label": "C/C++: g++.exe arquivo de build ativo",
-            "command": "g++.exe",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "-ggdb",
-                "${workspaceFolder}\\*.cpp",
-                "${workspaceFolder}\\*.c", // this should build c and cpp at the same time.
-                "-o",
-                "${workspaceFolder}\\main.exe"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "Tarefa gerada pelo Depurador."
+            "type": "shell",
+            "label": "BuildRun",
+            "command": "start \"\" /W cmd /k start \"Build Run\" /B bin/Debug/Trabalho-DCC045.exe",
+            "args": [],
+            "dependsOn":["MakefileBuild"],
+            "group": "build"
         }
     ],
     "version": "2.0.0"
