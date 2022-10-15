@@ -3,6 +3,7 @@
 #include <string.h>
 #include "CExport.h"
 #include "LexicalAnalyzer.h"
+#include "CExport.h"
 
 int main()
 {
@@ -16,6 +17,8 @@ int main()
         printf("File can't be opened \n");
         exit(2);
     }
+
+    constructorTable();
 
     lexicalConstructor(fp);
 
@@ -36,6 +39,11 @@ int main()
             printf("%s\n", tokenName);
         }
     }
+
+    printIdentifier();
+    printLexemeArray();
+
+    destructorTable();
 
     dumpErrors();
     errorBufferDestructor();
