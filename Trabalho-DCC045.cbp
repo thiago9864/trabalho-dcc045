@@ -43,6 +43,7 @@
 		<Unit filename="LexicalAnalyzer.h" />
 		<Unit filename="SymbolTable.cpp" />
 		<Unit filename="SymbolTable.h" />
+		<Unit filename="TableEntry.cpp" />
 		<Unit filename="TableEntry.h" />
 		<Unit filename="TokenDefinitions.h" />
 		<Unit filename="main.c">

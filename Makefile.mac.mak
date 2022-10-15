@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/Trabalho-DCC045
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/CExport.o $(OBJDIR_DEBUG)/ErrorManager.o $(OBJDIR_DEBUG)/LexicalAnalyzer.o $(OBJDIR_DEBUG)/SymbolTable.o $(OBJDIR_DEBUG)/main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/CExport.o $(OBJDIR_DEBUG)/ErrorManager.o $(OBJDIR_DEBUG)/LexicalAnalyzer.o $(OBJDIR_DEBUG)/SymbolTable.o $(OBJDIR_DEBUG)/TableEntry.o $(OBJDIR_DEBUG)/main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/CExport.o $(OBJDIR_RELEASE)/ErrorManager.o $(OBJDIR_RELEASE)/LexicalAnalyzer.o $(OBJDIR_RELEASE)/SymbolTable.o $(OBJDIR_RELEASE)/main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/CExport.o $(OBJDIR_RELEASE)/ErrorManager.o $(OBJDIR_RELEASE)/LexicalAnalyzer.o $(OBJDIR_RELEASE)/SymbolTable.o $(OBJDIR_RELEASE)/TableEntry.o $(OBJDIR_RELEASE)/main.o
 
 all: debug release
 
@@ -70,6 +70,9 @@ $(OBJDIR_DEBUG)/LexicalAnalyzer.o: LexicalAnalyzer.c
 
 $(OBJDIR_DEBUG)/SymbolTable.o: SymbolTable.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c SymbolTable.cpp -o $(OBJDIR_DEBUG)/SymbolTable.o
+
+$(OBJDIR_DEBUG)/TableEntry.o: TableEntry.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c TableEntry.cpp -o $(OBJDIR_DEBUG)/TableEntry.o
 
 $(OBJDIR_DEBUG)/main.o: main.c
 	$(CC) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.c -o $(OBJDIR_DEBUG)/main.o
@@ -101,6 +104,9 @@ $(OBJDIR_RELEASE)/LexicalAnalyzer.o: LexicalAnalyzer.c
 
 $(OBJDIR_RELEASE)/SymbolTable.o: SymbolTable.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c SymbolTable.cpp -o $(OBJDIR_RELEASE)/SymbolTable.o
+
+$(OBJDIR_RELEASE)/TableEntry.o: TableEntry.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c TableEntry.cpp -o $(OBJDIR_RELEASE)/TableEntry.o
 
 $(OBJDIR_RELEASE)/main.o: main.c
 	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.c -o $(OBJDIR_RELEASE)/main.o
