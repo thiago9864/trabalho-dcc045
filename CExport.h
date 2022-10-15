@@ -6,8 +6,22 @@ extern "C"
 {
 #endif // C++ guard
 
-void setObjValue(int v);
-void printObjValue();
+    void destructorTable();
+    void constructorTable();
+
+    void setReservedWord(const char *lexeme, int token);
+    void setIdentifier(const char *lexeme);
+    void setNum(const char *lexeme);
+    void setLiteral(const char *lexeme);
+
+    void printReservedWord();
+    void printIdentifier();
+    void printLexemeArray();
+
+    int searchReservedWord(const char *lexeme);
+    int searchIdentifier(const char *lexeme);
+    int searchNum(const char *lexeme);
+    int searchLiteral(const char *lexeme);
 
 #ifdef __cplusplus
 }
