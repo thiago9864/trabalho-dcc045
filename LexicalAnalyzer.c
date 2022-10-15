@@ -116,6 +116,25 @@ void lexicalConstructor(FILE *inputStream)
     // Init with first char
     currentChar = getNextChar();
     manageCursorPosition();
+
+    setReservedWord("if", IF);
+    setReservedWord("else", ELSE);
+    setReservedWord("try", TRY);
+    setReservedWord("catch", CATCH);
+    setReservedWord("bool", BOOL);
+    setReservedWord("return", RETURN);
+    setReservedWord("while", WHILE);
+    setReservedWord("break", BREAK);
+    setReservedWord("switch", SWITCH);
+    setReservedWord("print", PRINT);
+    setReservedWord("readln", READLN);
+    setReservedWord("case", CASE);
+    setReservedWord("throw", THROW);
+    setReservedWord("true", TRUE);
+    setReservedWord("false", FALSE);
+    setReservedWord("char", CHAR);
+    setReservedWord("typedef", TYPEDEF);
+    setReservedWord("struct", STRUCT);
 }
 
 void lexicalDestructor()
@@ -361,14 +380,24 @@ int nextToken()
                 notConsumeChar = 1;
             }
             break;
-        case 2:
+        case 2: {
             // Search lexeme on symbols table and return its token/id
             /****** Aqui entra a busca na tabela de símbolos ********/
-            token = ID;
-            done = 1;
-            notConsumeChar = 0;
-            break;
+            int reserved = searchReservedWord(getLexeme());
 
+            if(reserved != 0) { // if true this is Reserved Word
+                token = reserved;
+                done = 1;
+                notConsumeChar = 0;
+            } 
+            else  {// setIdentifer tests if the lexeme exists in the identifier table to insert
+                setIdentifier(getLexeme()); 
+                token = ID;
+                done = 1;
+                notConsumeChar = 0;
+            }    
+            break;
+        }
         case 3:
             token = LPAREN;
             done = 1;

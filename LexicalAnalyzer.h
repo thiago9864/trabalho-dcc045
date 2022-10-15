@@ -7,6 +7,7 @@
 #include <string.h>
 #include "TokenDefinitions.h"
 #include "ErrorManager.h"
+#include "CExport.h"
 
 #define LEXEME_BUFFER_SIZE 32
 #define FILE_CHUNK_BUFFER_SIZE 4096
