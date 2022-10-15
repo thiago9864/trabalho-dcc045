@@ -194,9 +194,10 @@ static void buildLexeme(char c)
         }
     }
 
+    //printf("lexemeBufferSize: %d, lexemeLength: %d\n", lexemeBufferSize, lexemeLength);
     lexemeBuffer[lexemeLength++] = c;
     lexemeBuffer[lexemeLength] = '\0';
-    //printf("buildLexeme: %c, lexemeBuffer: %s\n", c, lexemeBuffer);
+    // printf("buildLexeme: %c, lexemeBuffer: %s\n", c, lexemeBuffer);
 }
 
 static void clearLexeme()
@@ -204,7 +205,7 @@ static void clearLexeme()
     // memset(lexemeBuffer, '\0', lexemeBufferSize);
     lexemeBuffer[0] = '\0';
     lexemeLength = 0;
-    //printf("************ clearLexeme *************\n");
+    // printf("************ clearLexeme *************\n");
 }
 
 static void manageCursorPosition()
@@ -242,13 +243,13 @@ int nextToken()
             currentChar = getNextChar();
             manageCursorPosition();
             buildLexeme(currentChar);
-            //printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
+            // printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
         else
         {
             // currentChar = prevChar;
             notConsumeChar = 0;
-            //printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
+            // printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
 
         //  Switch between DFA states using only the number part of their names
@@ -380,22 +381,25 @@ int nextToken()
                 notConsumeChar = 1;
             }
             break;
-        case 2: {
+        case 2:
+        {
             // Search lexeme on symbols table and return its token/id
             /****** Aqui entra a busca na tabela de símbolos ********/
             int reserved = searchReservedWord(getLexeme());
 
-            if(reserved != 0) { // if true this is Reserved Word
+            if (reserved != 0)
+            { // if true this is Reserved Word
                 token = reserved;
                 done = 1;
                 notConsumeChar = 0;
-            } 
-            else  {// setIdentifer tests if the lexeme exists in the identifier table to insert
-                setIdentifier(getLexeme()); 
+            }
+            else
+            { // setIdentifer tests if the lexeme exists in the identifier table to insert
+                setIdentifier(getLexeme());
                 token = ID;
                 done = 1;
                 notConsumeChar = 0;
-            }    
+            }
             break;
         }
         case 3:
@@ -980,7 +984,22 @@ char *getLexeme()
     {
         return "";
     }
-    strcpy(lexemeFoundBuffer, lexemeBuffer);
+
+    char *newLexemeFoundBuffer = (char *)realloc(lexemeFoundBuffer, sizeof(char) * (lexemeLength + 1));
+    if (newLexemeFoundBuffer)
+    {
+        lexemeFoundBuffer = newLexemeFoundBuffer;
+    }
+    else
+    {
+        exit(7);
+    }
+
+    for (int i = 0; i <= lexemeLength; i++)
+    {
+        lexemeFoundBuffer[i] = lexemeBuffer[i];
+    }
+
     return lexemeFoundBuffer;
 }
 
