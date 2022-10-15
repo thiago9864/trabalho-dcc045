@@ -8,8 +8,9 @@
 #include "TokenDefinitions.h"
 #include "ErrorManager.h"
 
-#define LEXEME_BUFFER_SIZE 2
-#define FILE_CHUNK_BUFFER_SIZE 1
+#define LEXEME_BUFFER_SIZE 32
+#define FILE_CHUNK_BUFFER_SIZE 4096
+#define TOKEN_NAME_SIZE 32
 
 /**
  * Module constructor

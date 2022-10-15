@@ -22,6 +22,11 @@ static void buildLexeme(char c);
  */
 static void clearLexeme();
 
+/**
+ * Manage the line number and the column number of the DFA
+ */
+static void manageCursorPosition();
+
 ///////// Static variables ///////////
 
 static int dfaState = 0;
@@ -36,6 +41,7 @@ static int fileChunkReadPos = 0;
 static char currentChar = '\0';
 static int sourceCodeLine = 0;
 static int sourceCodeColumn = 0;
+static char *tokenName = NULL;
 
 // Token names
 static char const *tokenList[] = {
@@ -74,47 +80,71 @@ static char ONE_CHAR_ERROR[] = "Char literals can have only one char";
 void lexicalConstructor(FILE *inputStream)
 {
     fileChunkBuffer = (char *)malloc(sizeof(char) * FILE_CHUNK_BUFFER_SIZE);
+    if (!fileChunkBuffer)
+    {
+        // If malloc fails exit with code
+        exit(1);
+    }
 
     lexemeBuffer = (char *)malloc(sizeof(char) * LEXEME_BUFFER_SIZE);
+    if (!lexemeBuffer)
+    {
+        // If malloc fails exit with code
+        exit(2);
+    }
     lexemeBuffer[0] = '\0'; // Initialize with endl char
 
     lexemeFoundBuffer = (char *)malloc(sizeof(char) * LEXEME_BUFFER_SIZE);
+    if (!lexemeFoundBuffer)
+    {
+        // If malloc fails exit with code
+        exit(3);
+    }
     lexemeFoundBuffer[0] = '\0'; // Initialize with endl char
+
+    tokenName = (char *)malloc(sizeof(char) * TOKEN_NAME_SIZE);
+    if (!tokenName)
+    {
+        // If malloc fails exit with code
+        exit(4);
+    }
+    tokenName[0] = '\0'; // Initialize with endl char
 
     inputStreamPointer = inputStream;
     dfaState = 0; // Set initial state
 
     // Init with first char
     currentChar = getNextChar();
+    manageCursorPosition();
 }
 
 void lexicalDestructor()
 {
-    free(lexemeBuffer);
-    free(lexemeFoundBuffer);
+    free(tokenName);
     free(fileChunkBuffer);
+    free(lexemeFoundBuffer);
+    free(lexemeBuffer);
 }
 
 static char getNextChar()
 {
+    if (feof(inputStreamPointer))
+    {
+        return EOF;
+    }
+
     // Read a chunk of the file, if data is avaliable
-    if (fileChunkLength - fileChunkReadPos == 0)
+    if (fileChunkLength == fileChunkReadPos)
     {
         fileChunkLength = fread(fileChunkBuffer, sizeof(char), FILE_CHUNK_BUFFER_SIZE, inputStreamPointer);
         fileChunkReadPos = 0;
+        if (!fileChunkLength && ferror(inputStreamPointer))
+        {
+            exit(5);
+        }
     }
 
-    // If no char is read, return EOF
-    if (fileChunkLength == 0)
-    {
-        // Close the file on the stream
-        fclose(inputStreamPointer);
-        return EOF;
-    }
-    else
-    {
-        return fileChunkBuffer[fileChunkReadPos++];
-    }
+    return fileChunkBuffer[fileChunkReadPos++];
 }
 
 static int isScapeChar(char c)
@@ -132,18 +162,43 @@ static void buildLexeme(char c)
     if (lexemeLength + 1 == lexemeBufferSize)
     {
         lexemeBufferSize += LEXEME_BUFFER_SIZE;
-        // With a NULL pointer the realloc function behaves like a m_alloc
-        lexemeBuffer = (char *)realloc(lexemeBuffer, sizeof(char) * lexemeBufferSize);
+        // With a NULL pointer the re_alloc function behaves like a m_alloc
+        // printf("lexemeBuffer ptr %d asking for %d\n", lexemeBuffer, sizeof(char) * lexemeBufferSize);
+        char *newLexemeBuffer = (char *)realloc(lexemeBuffer, sizeof(char) * lexemeBufferSize);
+        if (newLexemeBuffer)
+        {
+            lexemeBuffer = newLexemeBuffer;
+        }
+        else
+        {
+            exit(6);
+        }
     }
 
     lexemeBuffer[lexemeLength++] = c;
     lexemeBuffer[lexemeLength] = '\0';
+    //printf("buildLexeme: %c, lexemeBuffer: %s\n", c, lexemeBuffer);
 }
 
 static void clearLexeme()
 {
-    memset(lexemeBuffer, '\0', lexemeBufferSize);
+    // memset(lexemeBuffer, '\0', lexemeBufferSize);
+    lexemeBuffer[0] = '\0';
     lexemeLength = 0;
+    //printf("************ clearLexeme *************\n");
+}
+
+static void manageCursorPosition()
+{
+    if (currentChar == '\n')
+    {
+        sourceCodeLine++;
+        sourceCodeColumn = 1;
+    }
+    else
+    {
+        sourceCodeColumn++;
+    }
 }
 
 int nextToken()
@@ -154,6 +209,10 @@ int nextToken()
     int notConsumeChar = 1;
 
     clearLexeme();
+    if (!isspace(currentChar))
+    {
+        buildLexeme(currentChar);
+    }
     dfaState = 0;
 
     while (done == 0)
@@ -162,23 +221,15 @@ int nextToken()
         {
             // prevChar = currentChar;
             currentChar = getNextChar();
-            // printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
+            manageCursorPosition();
+            buildLexeme(currentChar);
+            //printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
         else
         {
             // currentChar = prevChar;
             notConsumeChar = 0;
-            // printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
-        }
-
-        if (currentChar == '\n')
-        {
-            sourceCodeLine++;
-            sourceCodeColumn = 0;
-        }
-        else
-        {
-            sourceCodeColumn++;
+            //printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
 
         //  Switch between DFA states using only the number part of their names
@@ -198,13 +249,13 @@ int nextToken()
                 // Change to q1
                 dfaState = 1;
 
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else if (isdigit(currentChar)) // Checks for [0-9]
             {
                 dfaState = 28;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else if (currentChar == EOF)
@@ -240,15 +291,15 @@ int nextToken()
                     break;
                 case '.':
                     dfaState = 14;
-                    buildLexeme(currentChar);
+                    // buildLexeme(currentChar);
                     break;
                 case '\'':
                     dfaState = 30;
-                    buildLexeme(currentChar);
+                    // buildLexeme(currentChar);
                     break;
                 case '"':
                     dfaState = 32;
-                    buildLexeme(currentChar);
+                    // buildLexeme(currentChar);
                     break;
                 case ']':
                     dfaState = 38;
@@ -300,7 +351,7 @@ int nextToken()
         case 1:
             if (isalpha(currentChar) || isdigit(currentChar)) // Checks if is [a-zA-Z0-9].
             {
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else
@@ -384,7 +435,7 @@ int nextToken()
             if (isdigit(currentChar))
             {
                 dfaState = 16;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else
             {
@@ -400,11 +451,11 @@ int nextToken()
             if (currentChar == 'e' || currentChar == 'E')
             {
                 dfaState = 17;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else if (isdigit(currentChar))
             {
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else
@@ -426,7 +477,7 @@ int nextToken()
             {
                 dfaState = 22;
             }
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 18:
             if (isdigit(currentChar))
@@ -437,12 +488,12 @@ int nextToken()
             {
                 dfaState = 21;
             }
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 19:
             if (isdigit(currentChar))
             {
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else
@@ -486,7 +537,7 @@ int nextToken()
             {
                 dfaState = 22;
             }
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 24:
             if (isdigit(currentChar))
@@ -497,12 +548,12 @@ int nextToken()
             {
                 dfaState = 21;
             }
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 25:
             if (isdigit(currentChar))
             {
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else
@@ -519,7 +570,7 @@ int nextToken()
             if (isdigit(currentChar))
             {
                 dfaState = 25;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else
             {
@@ -531,16 +582,16 @@ int nextToken()
             if (currentChar == '.')
             {
                 dfaState = 29;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else if (currentChar == 'e' || currentChar == 'E')
             {
                 dfaState = 23;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else if (isdigit(currentChar))
             {
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
                 break;
             }
             else
@@ -554,12 +605,12 @@ int nextToken()
             if (currentChar == 'e' || currentChar == 'E')
             {
                 dfaState = 27;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else if (isdigit(currentChar))
             {
                 dfaState = 16;
-                buildLexeme(currentChar);
+                // buildLexeme(currentChar);
             }
             else
             {
@@ -589,7 +640,7 @@ int nextToken()
             {
                 dfaState = 37;
             }
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 31:
             token = LITERAL;
@@ -611,7 +662,7 @@ int nextToken()
             }
             // If not match with any of the conditions, is other and loop
             // in this state
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 33:
             if (isScapeChar(currentChar))
@@ -628,7 +679,7 @@ int nextToken()
             }
             // If not match with any of the conditions, is other and loop
             // in this state
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 34:
             // ERROR: Unexpected EOF in a comment
@@ -658,7 +709,7 @@ int nextToken()
             }
             // If not match with any of the conditions, is other and loop
             // in this state
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
         case 37:
             if (currentChar == '\'')
@@ -669,7 +720,7 @@ int nextToken()
             {
                 dfaState = 68;
             }
-            buildLexeme(currentChar);
+            // buildLexeme(currentChar);
             break;
 
             //////////////////////////////////////////
@@ -701,6 +752,7 @@ int nextToken()
             if (currentChar == '\n')
             {
                 dfaState = 0;
+                clearLexeme();
             }
             else if (currentChar == EOF)
             {
@@ -754,6 +806,7 @@ int nextToken()
             else if (currentChar == '/')
             {
                 dfaState = 0;
+                clearLexeme();
             }
             else
             {
@@ -904,11 +957,6 @@ char *getLexeme()
 
 char *getTokenName(int token)
 {
-    //return strdup(tokenList[token]);
-    size_t size = strlen(tokenList[token]) + 1;
-    char *p = malloc(size);
-    if (p) {
-        memcpy(p, tokenList[token], size);
-    }
-    return p;
+    strcpy(tokenName, tokenList[token]);
+    return tokenName;
 }

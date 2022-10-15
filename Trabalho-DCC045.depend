@@ -1,0 +1,40 @@
+# depslib dependency file v1.0
+1665595663 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\cexport.cpp
+	"CExport.h"
+	"SymbolTable.h"
+
+1665595335 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\cexport.h
+
+1665595570 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\symboltable.h
+	<iostream>
+
+1665788075 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.c
+	"ErrorManager.h"
+
+1665726013 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.h
+	<stdio.h>
+	<stdlib.h>
+
+1665801774 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.c
+	"LexicalAnalyzer.h"
+
+1665785513 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.h
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<string.h>
+	"TokenDefinitions.h"
+	"ErrorManager.h"
+
+1665627447 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\tokendefinitions.h
+
+1665796336 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"CExport.h"
+	"LexicalAnalyzer.h"
+
+1665595605 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\symboltable.cpp
+	"SymbolTable.h"
+

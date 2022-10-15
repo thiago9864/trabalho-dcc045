@@ -6,13 +6,15 @@
 
 int main()
 {
-    FILE *fp;
-    char ch;
+    FILE *fp = NULL;
+    // char ch;
 
-    fp = fopen("test/errors.txt", "r");
+    // fp = fopen("test/errors.txt", "r");
+    fp = fopen("test/tokens.cmm", "r");
     if (NULL == fp)
     {
         printf("File can't be opened \n");
+        exit(2);
     }
 
     lexicalConstructor(fp);
@@ -35,6 +37,13 @@ int main()
         }
     }
 
+    dumpErrors();
+    errorBufferDestructor();
     lexicalDestructor();
+
+    if (fclose(fp))
+    {
+        perror("fclose() failed");
+    }
     return 0;
 }
