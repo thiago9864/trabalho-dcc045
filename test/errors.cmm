@@ -11,7 +11,7 @@
 1.2E-
 .12e-
 
-"*** Espera erro 'Digit or sign expected after exponent ***"
+"*** Espera erro 'Digit or sign expected after exponent' ***"
 
 "Numeros Inteiros"
 12e
@@ -23,16 +23,17 @@
 .12e
 .12E
 
-"*** Espera erro 'Invalid escape sequence character ***"
-
-"um literal com um \z"
-
 "*** Espera erro 'Invalid char error' ***"
 🔥
 
 "*** Espera erro 'Char literals can have only one char' ***"
 
 'uma string ao inves de um literal'
+
+"*** Espera erro 'Invalid escape sequence character' ***"
+
+"\zum literal com um"
+'\z'
 
 "*** Espera erro 'Unexpected end of file in literal' ***"
 

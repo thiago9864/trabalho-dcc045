@@ -1,0 +1,37 @@
+/**
+* Ordenação para integereiros
+* @param vetor Vetor de integereiros
+* @param tam Tamanho do vetor
+*/
+void ordenarInteger(int *vetor, int tam){
+    for(int i=0; i<tam-1; i++){
+        bool trocou=false;
+        for(int j=0; j<tam-1-i; j++){
+            if(vetor[j] > vetor[j+1]){
+                int aux = vetor[j];
+                vetor[j] = vetor[j+1];
+                vetor[j+1] = aux;
+                trocou=true;
+            }
+        }
+        if(trocou==false){
+            break;
+        }
+    }
+}
+
+int main()
+{
+    int teste[5]={5,0,1,4,3};
+    for (int i=0;i<5;i++){
+        print("%d ", teste[i]);
+    }
+    print("\n");
+    ordenarInteger(teste, 5);
+    for (int i=0;i<5;i++){
+        print("%d ", teste[i]);
+    }
+    print("\n");
+
+    return 0;
+}

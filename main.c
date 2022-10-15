@@ -10,8 +10,8 @@ int main()
     FILE *fp = NULL;
     // char ch;
 
-    // fp = fopen("test/errors.txt", "r");
-    fp = fopen("test/tokens.cmm", "r");
+    //fp = fopen("test/errors.cmm", "r");
+    fp = fopen("test/BubbleSort.cmm", "r");
     if (NULL == fp)
     {
         printf("File can't be opened \n");

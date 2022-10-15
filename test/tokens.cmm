@@ -52,6 +52,8 @@
 .12E-3
 'a'
 'A'
+''
+""
 // Tem que ignorar esse comentário de linha
 /*
 Tem que ignorar esse comentário em bloco
@@ -61,16 +63,29 @@ Tem que ignorar esse comentário em bloco
 // Nem pra um literal numérico
 321354135465302103154156415453415514534532411545454523
 321354135465302103154156415453415514534532411545454523.321354135465302103154156415453415514534532411545454523e+321354135465302103154156415453415514534532411545454523
-// Statements
-IF
-ELSE
-BREAK
-CASE
-TRY
-CATCH
-PRINT
-READLN
-RETURN
-SWITCH
-THROW
-WHILE
+"Statements"
+if
+else
+break
+case
+try
+catch
+print
+readln
+return
+switch
+throw
+while
+"Identificadores"
+OhMyGirl
+Mamamoo
+Blackpink
+RedVelvet
+Twice
+GFriend
+Viviz
+aespa
+ITZY
+Hyuna
+Taeyeon
+Sunmi

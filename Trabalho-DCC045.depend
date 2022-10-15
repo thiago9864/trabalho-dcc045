@@ -19,7 +19,7 @@
 	<stdio.h>
 	<stdlib.h>
 
-1665801774 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.c
+1665870781 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.c
 	"LexicalAnalyzer.h"
 
 1665850744 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.h
@@ -33,7 +33,7 @@
 
 1665627447 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\tokendefinitions.h
 
-1665850744 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.c
+1665870727 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
