@@ -94,17 +94,17 @@ namespace c_namespace
             {
                 int index = entry->getLexIndex();
 
-                std::cout << "table_position = " << i << " | lexeme_array_positon = " << index << " | token = " << entry->getToken() << " | lexeme = ";
-
+                int lexemeSize = 0;
                 // Cycle through each lexeme character in the lexeme array
                 for (int j = 0; j < 20; j++)
                 {
                     if (lexArray[index + j] == 0)
                         break;
                     std::cout << lexArray[index + j];
+                    lexemeSize = j;
                 }
 
-                std::cout << std::endl;
+                std::cout << std::string((25 - lexemeSize), ' ') << entry->getToken() << std::endl;
 
                 entry = entry->getNext();
             }
@@ -150,7 +150,7 @@ namespace c_namespace
         // if lexeme exists in table, so don't do anything
         if (searchLexeme(lexeme) == NULL)
         {
-            SymbolTable::insert(new IdentifierEntry(0, 48), lexeme);
+            SymbolTable::insert(new IdentifierEntry(0, ID), lexeme);
         }
     }
     IdentifierEntry *IdentifierTable::searchLexeme(const char *lexeme)
@@ -163,7 +163,7 @@ namespace c_namespace
         // if lexeme exists in table, so don't do anything
         if (searchLexeme(lexeme) == NULL)
         {
-            SymbolTable::insert(new NumEntry(0, 49), lexeme);
+            SymbolTable::insert(new NumEntry(0, NUM), lexeme);
         }
     }
     NumEntry *NumTable::searchLexeme(const char *lexeme)
@@ -176,7 +176,7 @@ namespace c_namespace
         // if lexeme exists in table, so don't do anything
         if (searchLexeme(lexeme) == NULL)
         {
-            SymbolTable::insert(new LiteralEntry(0, 50), lexeme);
+            SymbolTable::insert(new LiteralEntry(0, LITERAL), lexeme);
         }
     }
     LiteralEntry *LiteralTable::searchLexeme(const char *lexeme)

@@ -40,8 +40,20 @@ int main()
         }
     }
 
-    printIdentifier();
-    printLexemeArray();
+    printf("\nTABELA DE SIMBOLOS: PALAVRAS RESERVADAS\n");
+    printf("---------------------------------------\n");
+    printf("LEXEMA                Token numerico\n");
+    printf("---------------------------------------");
+    printReservedWordTable();
+    printf("\nTABELA DE SIMBOLOS: IDENTIFICADORES\n");
+    printf("-----------------------------------");
+    printIdentifierTable();
+    printf("\nTABELA DE SIMBOLOS: LITERAIS\n");
+    printf("----------------------------");
+    printLiteralTable();
+    printf("\nTABELA DE SIMBOLOS: NUMEROS\n");
+    printf("----------------------------");
+    printNumTable();
 
     destructorTable();
 
