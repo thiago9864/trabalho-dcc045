@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include "TableEntry.h"
+#include "TokenDefinitions.h"
 
 #define TABLE_SIZE 127
 #define LEXEME_ARRAY 1024
