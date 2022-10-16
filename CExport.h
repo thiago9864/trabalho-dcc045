@@ -14,8 +14,11 @@ extern "C"
     void setNum(const char *lexeme);
     void setLiteral(const char *lexeme);
 
-    void printReservedWord();
-    void printIdentifier();
+    void printReservedWordTable();
+    void printIdentifierTable();
+    void printNumTable();
+    void printLiteralTable();
+
     void printLexemeArray();
 
     int searchReservedWord(const char *lexeme);

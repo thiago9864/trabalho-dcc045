@@ -47,14 +47,24 @@ void setLiteral(const char *lexeme)
     literalTable->insert(lexeme);
 }
 
-void printReservedWord()
+void printReservedWordTable()
 {
     reservedWordTable->print();
 }
 
-void printIdentifier()
+void printIdentifierTable()
 {
     identifierTable->print();
+}
+
+void printLiteralTable()
+{
+    literalTable->print();
+}
+
+void printNumTable()
+{
+    numTable->print();
 }
 
 void printLexemeArray()
@@ -65,6 +75,12 @@ void printLexemeArray()
     std::cout << std::endl
               << "Identifier Lexeme Array:";
     identifierTable->print_LexArray();
+    std::cout << std::endl
+              << "Identifier Lexeme Array:";
+    literalTable->print_LexArray();
+    std::cout << std::endl
+              << "Identifier Lexeme Array:";
+    numTable->print_LexArray();
 }
 
 int searchReservedWord(const char *lexeme)
