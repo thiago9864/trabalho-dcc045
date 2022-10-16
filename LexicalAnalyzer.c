@@ -122,6 +122,10 @@ void lexicalConstructor(FILE *inputStream)
     setReservedWord("try", TRY);
     setReservedWord("catch", CATCH);
     setReservedWord("bool", BOOL);
+    setReservedWord("int", INTEGER);
+    setReservedWord("double", DOUBLE);
+    setReservedWord("long", DOUBLE);
+    setReservedWord("real", REAL);
     setReservedWord("return", RETURN);
     setReservedWord("while", WHILE);
     setReservedWord("break", BREAK);

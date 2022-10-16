@@ -1,35 +1,45 @@
 /**
-* Ordenação para integereiros
-* @param vetor Vetor de integereiros
+* Ordenação para inteiros
+* @param vetor Vetor de inteiros
 * @param tam Tamanho do vetor
 */
 void ordenarInteger(int *vetor, int tam){
-    for(int i=0; i<tam-1; i++){
+    int i=0;
+    while(i<tam-1){
+        int j=0;
         bool trocou=false;
-        for(int j=0; j<tam-1-i; j++){
+        while(j<tam-1-i){
             if(vetor[j] > vetor[j+1]){
                 int aux = vetor[j];
                 vetor[j] = vetor[j+1];
                 vetor[j+1] = aux;
                 trocou=true;
             }
+            j=j+1;
         }
         if(trocou==false){
             break;
         }
+        i=i+1;
     }
 }
 
 int main()
 {
+    // Vetor a ordenar
     int teste[5]={5,0,1,4,3};
-    for (int i=0;i<5;i++){
+    int i=0;
+    while(i<5){
         print("%d ", teste[i]);
+        i=i+1;
     }
     print("\n");
     ordenarInteger(teste, 5);
-    for (int i=0;i<5;i++){
+    i=0;
+    // Imprime o vetor ordenado
+    while(i<5){
         print("%d ", teste[i]);
+        i=i+1;
     }
     print("\n");
 
