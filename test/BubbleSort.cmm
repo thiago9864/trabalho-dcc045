@@ -1,8 +1,4 @@
-/**
-* Ordenação para inteiros
-* @param vetor Vetor de inteiros
-* @param tam Tamanho do vetor
-*/
+/* Ordenação para inteiros */
 void ordenarInteger(int *vetor, int tam){
     int i=0;
     while(i<tam-1){
@@ -24,8 +20,7 @@ void ordenarInteger(int *vetor, int tam){
     }
 }
 
-int main()
-{
+int main() {
     // Vetor a ordenar
     int teste[5]={5,0,1,4,3};
     int i=0;
@@ -42,6 +37,5 @@ int main()
         i=i+1;
     }
     print("\n");
-
     return 0;
 }
