@@ -5,8 +5,8 @@ namespace c_namespace
     // Constructor
     SymbolTable::SymbolTable()
     {
-        lexArray_size = 0;
-        lexArray_pos = 0;
+        lexArray_size = 0; //
+        lexArray_pos = 0;  // lexeme actual pos
         lexArray = new char[LEXEME_ARRAY]();
 
         table = new TableEntry *[TABLE_SIZE];
@@ -22,7 +22,7 @@ namespace c_namespace
     int SymbolTable::hashFuntion(std::string const &lexeme)
     {
         int prime = 131; // first prime number greater than number of characters in the ASCII table
-        int mult = 1e9 + 9;
+        long mult = 1e9 + 9;
 
         long long hash_value = 0;
         long long p_pow = 1;
@@ -32,22 +32,24 @@ namespace c_namespace
             hash_value = (hash_value + (c - 'a' + 1) * p_pow) % mult;
             p_pow = (p_pow * prime) % mult;
         }
-        return hash_value % TABLE_SIZE;
+        return (unsigned int)hash_value % TABLE_SIZE;
     };
 
     void SymbolTable::insert(TableEntry *entry, const char *lexeme)
     {
         if (lexeme != NULL)
         {
+            int lexemeSize = strlen(lexeme);
+
             int index = hashFuntion(lexeme);
 
             entry->setNext(table[index]);
 
             table[index] = entry;
 
-            if ((unsigned)lexArray_size <= (unsigned)(lexArray_pos + strlen(lexeme)))
+            if (lexArray_size <= (lexArray_pos + lexemeSize))
             {
-                while ((unsigned)lexArray_size <= (unsigned)(lexArray_pos + strlen(lexeme)))
+                while (lexArray_size <= (lexArray_pos + lexemeSize))
                 {
                     lexArray_size += LEXEME_ARRAY;
                 }
@@ -58,7 +60,7 @@ namespace c_namespace
 
             entry->setLexIndex(lexArray_pos);
 
-            lexArray_pos = lexArray_pos + ((int)strlen(lexeme) + 1);
+            lexArray_pos = lexArray_pos + ((int)lexemeSize + 1);
         }
     }
 
@@ -72,7 +74,7 @@ namespace c_namespace
 
             while (entry != NULL)
             {
-                if (strcmp(lexArray + entry->getLexIndex(), lexeme) == 0)
+                if ((lexArray + entry->getLexIndex()) == lexeme)
                 {
                     return entry;
                 }
@@ -90,21 +92,23 @@ namespace c_namespace
         {
             TableEntry *entry = table[i];
 
-            while (entry != NULL)
+            if (entry != NULL)
             {
                 int index = entry->getLexIndex();
 
                 int lexemeSize = 0;
-                // Cycle through each lexeme character in the lexeme array
+
                 for (int j = 0; j < 20; j++)
                 {
                     if (lexArray[index + j] == 0)
                         break;
-                    std::cout << lexArray[index + j];
                     lexemeSize = j;
                 }
 
-                std::cout << std::string((25 - lexemeSize), ' ') << entry->getToken() << std::endl;
+                if (entry->getToken() == 48 || entry->getToken() == 49 || entry->getToken() == 50)
+                    std::cout << lexArray + entry->getLexIndex() << std::endl;
+                else
+                    std::cout << lexArray + entry->getLexIndex() << std::string((25 - lexemeSize), ' ') << entry->getToken() << std::endl;
 
                 entry = entry->getNext();
             }

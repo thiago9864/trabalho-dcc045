@@ -76,10 +76,10 @@ void printLexemeArray()
               << "Identifier Lexeme Array:";
     identifierTable->print_LexArray();
     std::cout << std::endl
-              << "Identifier Lexeme Array:";
+              << "Literal Lexeme Array:";
     literalTable->print_LexArray();
     std::cout << std::endl
-              << "Identifier Lexeme Array:";
+              << "Num Lexeme Array:";
     numTable->print_LexArray();
 }
 
