@@ -5,27 +5,49 @@
 #include "LexicalAnalyzer.h"
 #include "CExport.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-    FILE *fp = NULL;
-    // char ch;
+    FILE *fileStream = NULL;
+    char *filename = argv[1];
+    int isFilenameDynamic = 0;
 
-    //fp = fopen("test/errors.cmm", "r");
-    fp = fopen("test/tokens2.cmm", "r");
-    if (NULL == fp)
+    if (argc > 1)
     {
-        printf("File can't be opened \n");
-        exit(2);
+        // If first parameter doesn't have the dot char
+        if (!strchr(argv[1], '.'))
+        {
+            // Allocs space to the name received + file extension
+            int length = strlen(argv[1]);
+            filename = (char *)malloc(sizeof(char) * (length + 6));
+            isFilenameDynamic = 1; // Indicates the filename needs to be freed
+            if (!filename)
+            {
+                exit(1); // If can't allocate memory, exits
+            }
+            strcpy(filename, argv[1]); // Copy name received to the begining of the allocated space
+            strcat(filename, ".cmm"); // Concats the file extension
+        }
+        fileStream = fopen(filename, "r");
+        if (!fileStream)
+        {
+            printf("File can't be opened \n");
+            exit(2);
+        }
+    }
+    else
+    {
+        // If no args are found, uses stdin as the fileStream
+        fileStream = stdin;
     }
 
     constructorTable();
 
-    lexicalConstructor(fp);
+    lexicalConstructor(fileStream);
 
     int token = -1;
     while (token != END_OF_FILE)
     {
-        token = nextToken();
+        token = getNextToken();
         char *tokenName = getTokenName(token);
         char *lexeme = getLexeme();
 
@@ -39,6 +61,10 @@ int main()
             printf("%s\n", tokenName);
         }
     }
+
+    printf("\nERROS DE COMPILACAO\n");
+    printf("---------------------------------------\n");
+    dumpErrors();
 
     printf("\nTABELA DE SIMBOLOS: PALAVRAS RESERVADAS\n");
     printf("---------------------------------------\n");
@@ -54,11 +80,15 @@ int main()
 
     destructorTable();
 
-    dumpErrors();
+    
     errorBufferDestructor();
     lexicalDestructor();
 
-    if (fclose(fp))
+    if (isFilenameDynamic)
+    {
+        free(filename);
+    }
+    if (fclose(fileStream))
     {
         perror("fclose() failed");
     }

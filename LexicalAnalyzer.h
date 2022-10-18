@@ -26,7 +26,7 @@ void lexicalDestructor();
 /**
  * Returns the next token from the source code
  */
-int nextToken();
+int getNextToken();
 
 /**
  * Returns the token name

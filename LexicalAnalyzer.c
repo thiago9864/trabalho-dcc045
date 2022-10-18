@@ -115,7 +115,6 @@ void lexicalConstructor(FILE *inputStream)
 
     // Init with first char
     currentChar = getNextChar();
-    // manageCursorPosition();
 
     setReservedWord("if", IF);
     setReservedWord("else", ELSE);
@@ -188,7 +187,6 @@ static void buildLexeme(char c)
     {
         lexemeBufferSize += LEXEME_BUFFER_SIZE;
         // With a NULL pointer the re_alloc function behaves like a m_alloc
-        // printf("lexemeBuffer ptr %d asking for %d\n", lexemeBuffer, sizeof(char) * lexemeBufferSize);
         char *newLexemeBuffer = (char *)realloc(lexemeBuffer, sizeof(char) * lexemeBufferSize);
         if (newLexemeBuffer)
         {
@@ -200,18 +198,14 @@ static void buildLexeme(char c)
         }
     }
 
-    // printf("lexemeBufferSize: %d, lexemeLength: %d\n", lexemeBufferSize, lexemeLength);
     lexemeBuffer[lexemeLength++] = c;
     lexemeBuffer[lexemeLength] = '\0';
-    // printf("buildLexeme: %c, lexemeBuffer: %s\n", c, lexemeBuffer);
 }
 
 static void clearLexeme()
 {
-    // memset(lexemeBuffer, '\0', lexemeBufferSize);
     lexemeBuffer[0] = '\0';
     lexemeLength = 0;
-    // printf("************ clearLexeme *************\n");
 }
 
 static void manageCursorPosition()
@@ -227,7 +221,7 @@ static void manageCursorPosition()
     }
 }
 
-int nextToken()
+int getNextToken()
 {
 
     int done = 0;
@@ -235,26 +229,17 @@ int nextToken()
     int notConsumeChar = 1;
 
     clearLexeme();
-    // if (!isspace(currentChar))
-    // {
-    //     // buildLexeme(currentChar);
-    // }
     dfaState = 0;
 
     while (done == 0)
     {
         if (notConsumeChar == 0)
         {
-            // prevChar = currentChar;
             currentChar = getNextChar();
-            // buildLexeme(currentChar);
-            //  printf("currentChar (new): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
         else
         {
-            // currentChar = prevChar;
             notConsumeChar = 0;
-            // printf("currentChar (prev): '%c' - dfaState: %d - done: %d\n", currentChar, dfaState, done);
         }
 
         //  Switch between DFA states using only the number part of their names
@@ -392,7 +377,6 @@ int nextToken()
         case 2:
         {
             // Search lexeme on symbols table and return its token/id
-            /****** Aqui entra a busca na tabela de símbolos ********/
             int reserved = searchReservedWord(getLexeme());
 
             if (reserved != 0)
@@ -798,7 +782,6 @@ int nextToken()
             }
             // If not match with any of the conditions, is other and loop
             // in this state
-            // buildLexeme(currentChar);
             break;
         case 37:
             if (currentChar == '\'')
@@ -812,7 +795,6 @@ int nextToken()
                 dfaState = 68;
                 manageCursorPosition();
             }
-            // buildLexeme(currentChar);
             break;
 
             //////////////////////////////////////////
@@ -1071,7 +1053,6 @@ char *getLexeme()
     {
         lexemeFoundBuffer[i] = lexemeBuffer[i];
     }
-    //printf("getLexeme(): [%s]\n",lexemeFoundBuffer);
     return lexemeFoundBuffer;
 }
 

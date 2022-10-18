@@ -99,7 +99,7 @@ namespace c_namespace
 
             while (entry != NULL)
             {
-                if ((lexArray + entry->getLexIndex()) == lexeme)
+                if(strcmp((lexArray + entry->getLexIndex()), lexeme)==0)
                 {
                     return entry;
                 }
