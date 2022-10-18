@@ -11,19 +11,16 @@ extern "C"
 
     void setReservedWord(const char *lexeme, int token);
     void setIdentifier(const char *lexeme);
-    void setNum(const char *lexeme);
-    void setLiteral(const char *lexeme);
+    void setLiteral(const char *lexeme, int token);
 
     void printReservedWordTable();
     void printIdentifierTable();
-    void printNumTable();
     void printLiteralTable();
 
     void printLexemeArray();
 
     int searchReservedWord(const char *lexeme);
     int searchIdentifier(const char *lexeme);
-    int searchNum(const char *lexeme);
     int searchLiteral(const char *lexeme);
 
 #ifdef __cplusplus

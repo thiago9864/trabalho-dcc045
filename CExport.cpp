@@ -6,7 +6,6 @@ using namespace c_namespace;
 namespace
 {
     IdentifierTable *identifierTable;
-    NumTable *numTable;
     LiteralTable *literalTable;
     ReservedWordTable *reservedWordTable;
 } // namespace name
@@ -14,7 +13,6 @@ namespace
 void constructorTable()
 {
     identifierTable = new IdentifierTable();
-    numTable = new NumTable();
     literalTable = new LiteralTable();
     reservedWordTable = new ReservedWordTable();
 }
@@ -22,7 +20,6 @@ void constructorTable()
 void destructorTable()
 {
     delete identifierTable;
-    delete numTable;
     delete literalTable;
     delete reservedWordTable;
 }
@@ -37,14 +34,9 @@ void setIdentifier(const char *lexeme)
     identifierTable->insert(lexeme);
 }
 
-void setNum(const char *lexeme)
+void setLiteral(const char *lexeme, int token)
 {
-    numTable->insert(lexeme);
-}
-
-void setLiteral(const char *lexeme)
-{
-    literalTable->insert(lexeme);
+    literalTable->insert(lexeme, token);
 }
 
 void printReservedWordTable()
@@ -62,11 +54,6 @@ void printLiteralTable()
     literalTable->print();
 }
 
-void printNumTable()
-{
-    numTable->print();
-}
-
 void printLexemeArray()
 {
     std::cout << std::endl
@@ -78,9 +65,6 @@ void printLexemeArray()
     std::cout << std::endl
               << "Literal Lexeme Array:";
     literalTable->print_LexArray();
-    std::cout << std::endl
-              << "Num Lexeme Array:";
-    numTable->print_LexArray();
 }
 
 int searchReservedWord(const char *lexeme)
@@ -99,17 +83,6 @@ int searchIdentifier(const char *lexeme)
     if (identifierTable->searchLexeme(lexeme) != NULL)
     {
         int result = identifierTable->searchLexeme(lexeme)->getToken();
-        return result;
-    }
-    else
-        return 0;
-}
-
-int searchNum(const char *lexeme)
-{
-    if (numTable->searchLexeme(lexeme) != NULL)
-    {
-        int result = numTable->searchLexeme(lexeme)->getToken();
         return result;
     }
     else

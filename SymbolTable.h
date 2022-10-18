@@ -49,17 +49,10 @@ namespace c_namespace
         IdentifierEntry *searchLexeme(const char *lexeme);
     };
 
-    class NumTable : public SymbolTable
-    {
-    public:
-        void insert(char const *lexeme);
-        NumEntry *searchLexeme(const char *lexeme);
-    };
-
     class LiteralTable : public SymbolTable
     {
     public:
-        void insert(char const *lexeme);
+        void insert(const char *lexeme, int token);
         LiteralEntry *searchLexeme(const char *lexeme);
     };
 

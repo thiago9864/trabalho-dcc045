@@ -11,7 +11,7 @@ int main()
     // char ch;
 
     //fp = fopen("test/errors.cmm", "r");
-    fp = fopen("test/BubbleSort.cmm", "r");
+    fp = fopen("test/tokens2.cmm", "r");
     if (NULL == fp)
     {
         printf("File can't be opened \n");
@@ -51,9 +51,6 @@ int main()
     printf("\nTABELA DE SIMBOLOS: LITERAIS\n");
     printf("----------------------------");
     printLiteralTable();
-    printf("\nTABELA DE SIMBOLOS: NUMEROS\n");
-    printf("----------------------------");
-    printNumTable();
 
     destructorTable();
 

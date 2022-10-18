@@ -19,22 +19,40 @@ namespace c_namespace
         delete lexArray;
     };
 
+    /**
+     * The Hash function uses the prime number 131, as this number is the first
+     * best greater than the size of the ASCII table. Next, the collision number
+     * is a big number to avoid or minimize the collisions.
+     * Each character in lexeme result in a hash_value + number of the character
+     * corresponding ASCII * rest, in this result the % is made with the
+     * collision number, and this is the new hash_value.
+     * Finally the Hash function return hash_value % table size.
+     * @param lexeme
+     */
     int SymbolTable::hashFuntion(std::string const &lexeme)
     {
-        int prime = 131; // first prime number greater than number of characters in the ASCII table
-        long mult = 1e9 + 9;
+        int prime = 131;
+        long collision = 1e9 + 9;
 
         long long hash_value = 0;
-        long long p_pow = 1;
+        long long rest = 1;
 
         for (char c : lexeme)
         {
-            hash_value = (hash_value + (c - 'a' + 1) * p_pow) % mult;
-            p_pow = (p_pow * prime) % mult;
+            hash_value = (hash_value + (c - 'a' + 1) * rest) % collision;
+            rest = (rest * prime) % collision;
         }
         return (unsigned int)hash_value % TABLE_SIZE;
     };
 
+    /**
+     * The insertion function use a new empty value of TableEntry and the lexeme,
+     * if lexeme different of NULL then insert can be done.
+     * The values of TableEntry is set and SymbolTable receive the entry.
+     * Next, lexeme array receive the lexeme in next empty position.
+     * @param entry
+     * @param lexeme
+     */
     void SymbolTable::insert(TableEntry *entry, const char *lexeme)
     {
         if (lexeme != NULL)
@@ -64,6 +82,13 @@ namespace c_namespace
         }
     }
 
+    /**
+     * To search lexeme is created a TableEntry to receive SymbolTable in hash
+     * result position, while TableEntry is different to NULL check if the lexemes
+     * are equal to return that lexeme exists, skip to the next lexeme and check
+     * successively, if not found return NULL.
+     * @param lexeme
+     */
     TableEntry *SymbolTable::searchLexeme(const char *lexeme)
     {
         if (lexeme != NULL)
@@ -136,6 +161,13 @@ namespace c_namespace
         std::cout << std::endl;
     }
 
+    /**
+     * In the inherited class from SymbolTable use search to check if it can insert.
+     * If NULL call insert function of SymbolTable with params new TableEntry and
+     * lexeme.
+     * @param lexeme
+     * @param token
+     */
     void ReservedWordTable::insert(const char *lexeme, int token)
     {
         // if lexeme exists in table, so don't do anything
@@ -149,6 +181,14 @@ namespace c_namespace
         return (ReservedWordEntry *)SymbolTable::searchLexeme(lexeme);
     }
 
+    /**
+     * In the inherited class from SymbolTable use search to check if it can insert.
+     * If NULL call insert function of SymbolTable with params new TableEntry and
+     * lexeme.
+     * In this case TableEntry the token param is fixed in ID = 48, because at all ids have
+     * same token.
+     * @param lexeme
+     */
     void IdentifierTable::insert(const char *lexeme)
     {
         // if lexeme exists in table, so don't do anything
@@ -162,25 +202,12 @@ namespace c_namespace
         return (IdentifierEntry *)SymbolTable::searchLexeme(lexeme);
     }
 
-    void NumTable::insert(const char *lexeme)
+    void LiteralTable::insert(const char *lexeme, int token)
     {
         // if lexeme exists in table, so don't do anything
         if (searchLexeme(lexeme) == NULL)
         {
-            SymbolTable::insert(new NumEntry(0, NUM), lexeme);
-        }
-    }
-    NumEntry *NumTable::searchLexeme(const char *lexeme)
-    {
-        return (NumEntry *)SymbolTable::searchLexeme(lexeme);
-    }
-
-    void LiteralTable::insert(const char *lexeme)
-    {
-        // if lexeme exists in table, so don't do anything
-        if (searchLexeme(lexeme) == NULL)
-        {
-            SymbolTable::insert(new LiteralEntry(0, LITERAL), lexeme);
+            SymbolTable::insert(new LiteralEntry(0, token), lexeme);
         }
     }
     LiteralEntry *LiteralTable::searchLexeme(const char *lexeme)

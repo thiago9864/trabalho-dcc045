@@ -557,7 +557,7 @@ int nextToken()
             }
             break;
         case 20:
-            setNum(getLexeme());
+            setLiteral(getLexeme(), NUM);
             token = REAL;
             done = 1;
             break;
@@ -629,7 +629,7 @@ int nextToken()
             }
             break;
         case 26:
-            setNum(getLexeme());
+            setLiteral(getLexeme(), NUM);
             token = INTEGER;
             done = 1;
             break;
@@ -721,7 +721,7 @@ int nextToken()
             }
             break;
         case 31:
-            setLiteral(getLexeme());
+            setLiteral(getLexeme(), LITERAL);
             token = LITERAL;
             done = 1;
             notConsumeChar = 1;
