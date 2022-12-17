@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "CExport.h"
+#include "SymbolTable.h"
 #include "LexicalAnalyzer.h"
 #include "CExport.h"
+#include "RDParser.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
         fileStream = fopen(filename, "r");
         if (!fileStream)
         {
-            printf("File can't be opened \n");
+            printf("File '%s' can't be opened \n", filename);
             exit(2);
         }
     }
@@ -44,23 +46,28 @@ int main(int argc, char *argv[])
 
     lexicalConstructor(fileStream);
 
-    int token = -1;
-    while (token != END_OF_FILE)
-    {
-        token = getNextToken();
-        char *tokenName = getTokenName(token);
-        char *lexeme = getLexeme();
+    RDParser *parser = new RDParser();
 
-        // sending to stdout
-        if (token == ID || token == REAL || token == INTEGER || token == LITERAL)
-        {
-            printf("%s.%s\n", tokenName, lexeme);
-        }
-        else
-        {
-            printf("%s\n", tokenName);
-        }
-    }
+    parser->startParser();
+
+    // Relativo a parte 1 do trabalho
+    // int token = -1;
+    // while (token != END_OF_FILE)
+    // {
+    //     token = getNextToken();
+    //     char *tokenName = getTokenName(token);
+    //     char *lexeme = getLexeme();
+
+    //     // sending to stdout
+    //     if (token == ID || token == REAL || token == INTEGER || token == LITERAL)
+    //     {
+    //         printf("%s.%s\n", tokenName, lexeme);
+    //     }
+    //     else
+    //     {
+    //         printf("%s\n", tokenName);
+    //     }
+    // }
 
     printf("\nERROS DE COMPILACAO\n");
     printf("---------------------------------------\n");

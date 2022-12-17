@@ -33,22 +33,18 @@
 		</Compiler>
 		<Unit filename="CExport.cpp" />
 		<Unit filename="CExport.h" />
-		<Unit filename="ErrorManager.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="ErrorManager.cpp" />
 		<Unit filename="ErrorManager.h" />
-		<Unit filename="LexicalAnalyzer.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="LexicalAnalyzer.cpp" />
 		<Unit filename="LexicalAnalyzer.h" />
+		<Unit filename="RDParser.cpp" />
+		<Unit filename="RDParser.h" />
 		<Unit filename="SymbolTable.cpp" />
 		<Unit filename="SymbolTable.h" />
 		<Unit filename="TableEntry.cpp" />
 		<Unit filename="TableEntry.h" />
 		<Unit filename="TokenDefinitions.h" />
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

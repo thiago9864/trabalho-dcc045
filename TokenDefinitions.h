@@ -66,6 +66,7 @@
 #define FALSE 51
 #define TRUE 52
 #define ASSIGN 53
+#define ASCII 55
 
 #define END_OF_FILE 54
 

@@ -1,3 +1,4 @@
-main(){
+int main(){
     print("oioioioi")
+    return 0;
 }

@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj\\Release
 DEP_RELEASE = 
 OUT_RELEASE = bin\\Release\\Trabalho-DCC045.exe
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)\\CExport.o $(OBJDIR_DEBUG)\\ErrorManager.o $(OBJDIR_DEBUG)\\LexicalAnalyzer.o $(OBJDIR_DEBUG)\\SymbolTable.o $(OBJDIR_DEBUG)\\TableEntry.o $(OBJDIR_DEBUG)\\main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)\\CExport.o $(OBJDIR_DEBUG)\\ErrorManager.o $(OBJDIR_DEBUG)\\LexicalAnalyzer.o $(OBJDIR_DEBUG)\\RDParser.o $(OBJDIR_DEBUG)\\SymbolTable.o $(OBJDIR_DEBUG)\\TableEntry.o $(OBJDIR_DEBUG)\\main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)\\CExport.o $(OBJDIR_RELEASE)\\ErrorManager.o $(OBJDIR_RELEASE)\\LexicalAnalyzer.o $(OBJDIR_RELEASE)\\SymbolTable.o $(OBJDIR_RELEASE)\\TableEntry.o $(OBJDIR_RELEASE)\\main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)\\CExport.o $(OBJDIR_RELEASE)\\ErrorManager.o $(OBJDIR_RELEASE)\\LexicalAnalyzer.o $(OBJDIR_RELEASE)\\RDParser.o $(OBJDIR_RELEASE)\\SymbolTable.o $(OBJDIR_RELEASE)\\TableEntry.o $(OBJDIR_RELEASE)\\main.o
 
 all: debug release
 
@@ -62,11 +62,14 @@ out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 $(OBJDIR_DEBUG)\\CExport.o: CExport.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c CExport.cpp -o $(OBJDIR_DEBUG)\\CExport.o
 
-$(OBJDIR_DEBUG)\\ErrorManager.o: ErrorManager.c
-	$(CC) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ErrorManager.c -o $(OBJDIR_DEBUG)\\ErrorManager.o
+$(OBJDIR_DEBUG)\\ErrorManager.o: ErrorManager.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ErrorManager.cpp -o $(OBJDIR_DEBUG)\\ErrorManager.o
 
-$(OBJDIR_DEBUG)\\LexicalAnalyzer.o: LexicalAnalyzer.c
-	$(CC) $(CFLAGS_DEBUG) $(INC_DEBUG) -c LexicalAnalyzer.c -o $(OBJDIR_DEBUG)\\LexicalAnalyzer.o
+$(OBJDIR_DEBUG)\\LexicalAnalyzer.o: LexicalAnalyzer.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c LexicalAnalyzer.cpp -o $(OBJDIR_DEBUG)\\LexicalAnalyzer.o
+
+$(OBJDIR_DEBUG)\\RDParser.o: RDParser.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c RDParser.cpp -o $(OBJDIR_DEBUG)\\RDParser.o
 
 $(OBJDIR_DEBUG)\\SymbolTable.o: SymbolTable.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c SymbolTable.cpp -o $(OBJDIR_DEBUG)\\SymbolTable.o
@@ -74,8 +77,8 @@ $(OBJDIR_DEBUG)\\SymbolTable.o: SymbolTable.cpp
 $(OBJDIR_DEBUG)\\TableEntry.o: TableEntry.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c TableEntry.cpp -o $(OBJDIR_DEBUG)\\TableEntry.o
 
-$(OBJDIR_DEBUG)\\main.o: main.c
-	$(CC) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.c -o $(OBJDIR_DEBUG)\\main.o
+$(OBJDIR_DEBUG)\\main.o: main.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)\\main.o
 
 clean_debug: 
 	cmd /c del /f $(OBJ_DEBUG) $(OUT_DEBUG)
@@ -96,11 +99,14 @@ out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 $(OBJDIR_RELEASE)\\CExport.o: CExport.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c CExport.cpp -o $(OBJDIR_RELEASE)\\CExport.o
 
-$(OBJDIR_RELEASE)\\ErrorManager.o: ErrorManager.c
-	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ErrorManager.c -o $(OBJDIR_RELEASE)\\ErrorManager.o
+$(OBJDIR_RELEASE)\\ErrorManager.o: ErrorManager.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ErrorManager.cpp -o $(OBJDIR_RELEASE)\\ErrorManager.o
 
-$(OBJDIR_RELEASE)\\LexicalAnalyzer.o: LexicalAnalyzer.c
-	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c LexicalAnalyzer.c -o $(OBJDIR_RELEASE)\\LexicalAnalyzer.o
+$(OBJDIR_RELEASE)\\LexicalAnalyzer.o: LexicalAnalyzer.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c LexicalAnalyzer.cpp -o $(OBJDIR_RELEASE)\\LexicalAnalyzer.o
+
+$(OBJDIR_RELEASE)\\RDParser.o: RDParser.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c RDParser.cpp -o $(OBJDIR_RELEASE)\\RDParser.o
 
 $(OBJDIR_RELEASE)\\SymbolTable.o: SymbolTable.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c SymbolTable.cpp -o $(OBJDIR_RELEASE)\\SymbolTable.o
@@ -108,8 +114,8 @@ $(OBJDIR_RELEASE)\\SymbolTable.o: SymbolTable.cpp
 $(OBJDIR_RELEASE)\\TableEntry.o: TableEntry.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c TableEntry.cpp -o $(OBJDIR_RELEASE)\\TableEntry.o
 
-$(OBJDIR_RELEASE)\\main.o: main.c
-	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.c -o $(OBJDIR_RELEASE)\\main.o
+$(OBJDIR_RELEASE)\\main.o: main.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)\\main.o
 
 clean_release: 
 	cmd /c del /f $(OBJ_RELEASE) $(OUT_RELEASE)

@@ -1,12 +1,16 @@
 /* Ordenação para inteiros */
-void ordenarInteger(int *vetor, int tam){
-    int i=0;
+int ordenarInteger(int *vetor, int tam){
+    int i;
+    int j;
+    bool trocou;
+    int aux;
+    i=0;
     while(i<tam-1){
-        int j=0;
-        bool trocou=false;
+        j=0;
+        trocou=false;
         while(j<tam-1-i){
             if(vetor[j] > vetor[j+1]){
-                int aux = vetor[j];
+                aux = vetor[j];
                 vetor[j] = vetor[j+1];
                 vetor[j+1] = aux;
                 trocou=true;
@@ -18,12 +22,15 @@ void ordenarInteger(int *vetor, int tam){
         }
         i=i+1;
     }
+    return 0;
 }
 
 int main() {
     // Vetor a ordenar
-    int teste[5]={5,0,1,4,3};
-    int i=0;
+    int teste[5];
+    int i;
+    teste={5,0,1,4,3};
+    i=0;
     while(i<5){
         print("%d ", teste[i]);
         i=i+1;

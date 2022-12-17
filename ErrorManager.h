@@ -5,16 +5,16 @@
 
 #define ERROR_BUFFER_SIZE 32
 
-extern void errorBufferDestructor();
+void errorBufferDestructor();
 
 /**
  * Writes the error in the stderr output stream
 */
-extern void writeLexicalError(char *description, int line, int column);
+void writeLexicalError(char *description, int line, int column);
 
 /**
  * Print errors stored at the error buffer on the stderr stream
 */
-extern void dumpErrors();
+void dumpErrors();
 
 #endif // ERROR_MANAGER
