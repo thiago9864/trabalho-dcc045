@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include "LexicalAnalyzer.h"
+#include "ErrorManager.h"
 
 class RDParser
 {
@@ -14,6 +15,8 @@ private:
 
     void nextToken();
     void match(int token);
+
+    void error(int expectedToken, const int *syncArr);
 
     // Functions of nonterminals
     static int sync_Program[];

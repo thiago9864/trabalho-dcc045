@@ -9,6 +9,7 @@ typedef struct
 } Error;
 
 static char LEXICAL_ERROR_NAME[] = "Lexical error";
+static char SYNTAX_ERROR_NAME[] = "Syntax error";
 
 static Error *errorBuffer = NULL;
 static int errorBufferSize = 0;
@@ -40,6 +41,32 @@ void writeLexicalError(char *description, int line, int column)
     int errInd = errorLength++;
 
     errorBuffer[errInd].type = LEXICAL_ERROR_NAME;
+    errorBuffer[errInd].description = description;
+    errorBuffer[errInd].line = line;
+    errorBuffer[errInd].column = column;
+}
+
+void writeSyntaxError(char *description, int line, int column)
+{
+
+    if (errorLength == errorBufferSize)
+    {
+        errorBufferSize += ERROR_BUFFER_SIZE;
+        // With a NULL pointer the realloc function behaves like a m_alloc
+        Error *newErrorBuffer = (Error *)realloc(errorBuffer, sizeof(Error) * errorBufferSize);
+        if (newErrorBuffer)
+        {
+            errorBuffer = newErrorBuffer;
+        }
+        else
+        {
+            exit(9);
+        }
+    }
+
+    int errInd = errorLength++;
+
+    errorBuffer[errInd].type = SYNTAX_ERROR_NAME;
     errorBuffer[errInd].description = description;
     errorBuffer[errInd].line = line;
     errorBuffer[errInd].column = column;

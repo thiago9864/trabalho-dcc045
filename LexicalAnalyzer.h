@@ -38,4 +38,14 @@ char *getTokenName(int token);
  */
 char *getLexeme();
 
+/**
+ * Return the source code line where the AFD stopped
+*/
+int getSourceCodeLine ();
+
+/**
+ * Return the source code column where the AFD stopped
+*/
+int getSourceCodeColumn ();
+
 #endif // LEXICAL_ANALYZER

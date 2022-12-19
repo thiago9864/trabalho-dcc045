@@ -43,7 +43,7 @@
 #define CHAR 31
 #define DOUBLE 32
 #define LONG 33
-#define REAL 34
+#define FLOAT 34
 #define INTEGER 35
 
 // Statements
@@ -62,7 +62,8 @@
 
 // Primary
 #define ID 48
-#define NUM 49
+#define NUM_INT 49
+#define NUM_REAL 57
 #define LITERAL 50
 #define FALSE 51
 #define TRUE 52

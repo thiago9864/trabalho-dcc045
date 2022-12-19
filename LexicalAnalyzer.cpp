@@ -59,14 +59,17 @@ static char const *tokenList[] = {
 
     // Types
     "TYPEDEF", "STRUCT", "BOOL", "CHAR", "DOUBLE", "LONG",
-    "REAL", "INTEGER",
+    "FLOAT", "INTEGER",
 
     // Statements
     "IF", "ELSE", "BREAK", "CASE", "TRY", "CATCH", "PRINT",
     "READLN", "RETURN", "SWITCH", "THROW", "WHILE",
 
     // Primary
-    "ID", "NUM", "LITERAL", "FALSE", "TRUE", "ASSIGN", "END_OF_FILE"};
+    "ID", "NUM_INT", "LITERAL", "FALSE", "TRUE", "ASSIGN", "END_OF_FILE",
+    
+    // Added on the 2nd part
+    "ASCII", "TRIPLE_DOT", "NUM_REAL"};
 
 // Error labels
 static char DIGIT_EXPECTED_ERROR[] = "Digit expected after sign";
@@ -123,8 +126,10 @@ void lexicalConstructor(FILE *inputStream)
     setReservedWord("bool", BOOL);
     setReservedWord("int", INTEGER);
     setReservedWord("double", DOUBLE);
+    setReservedWord("float", FLOAT);
     setReservedWord("long", DOUBLE);
-    setReservedWord("real", REAL);
+    setReservedWord("real", NUM_REAL);
+    setReservedWord("integer", NUM_INT);
     setReservedWord("return", RETURN);
     setReservedWord("while", WHILE);
     setReservedWord("break", BREAK);
@@ -219,6 +224,14 @@ static void manageCursorPosition()
     {
         sourceCodeColumn++;
     }
+}
+
+int getSourceCodeLine (){
+    return sourceCodeLine;
+}
+
+int getSourceCodeColumn (){
+    return sourceCodeColumn;
 }
 
 int getNextToken()
@@ -541,8 +554,8 @@ int getNextToken()
             }
             break;
         case 20:
-            setLiteral(getLexeme(), NUM);
-            token = REAL;
+            setLiteral(getLexeme(), NUM_REAL);
+            token = NUM_REAL;
             done = 1;
             break;
         case 21:
@@ -613,8 +626,8 @@ int getNextToken()
             }
             break;
         case 26:
-            setLiteral(getLexeme(), NUM);
-            token = INTEGER;
+            setLiteral(getLexeme(), NUM_INT);
+            token = NUM_INT;
             done = 1;
             break;
         case 27:

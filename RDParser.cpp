@@ -17,7 +17,7 @@ void RDParser::nextToken()
     // Aqui obtem o nextToken do analisador léxico
     lookAhead = getNextToken();
     char *tokenName = getTokenName(lookAhead);
-    printf("Token de lookAhead: %s\n", tokenName);
+    printf("[DEBUG] Token de lookAhead: %s\n", tokenName);
 }
 
 void RDParser::match(int token)
@@ -32,6 +32,36 @@ void RDParser::match(int token)
     }
 }
 
+static char errorTemplate[] = "Token Error: ";
+
+void RDParser::error(int expectedToken, const int *syncArr)
+{
+    char *tokenName = getTokenName(expectedToken);
+    int templateLen = 0;
+    for (; errorTemplate[templateLen] != '\0'; templateLen++);
+    char *errStr = new char[templateLen + strlen(tokenName)];
+    errStr[0] = '\0';
+    strcat(errStr, errorTemplate);
+    strcat(errStr, tokenName);
+
+    writeSyntaxError(errStr, getSourceCodeLine(), getSourceCodeColumn());
+
+    int i = 0;
+    while (lookAhead != END_OF_FILE)
+    {
+        while (syncArr[i] != END_OF_FILE)
+        {
+            if (lookAhead != syncArr[i])
+            {
+                i++;
+            }
+            return;
+        }
+        i = 0;
+        getNextToken();
+    }
+}
+
 int RDParser::sync_Program[] = {END_OF_FILE};
 void RDParser::Program()
 {
@@ -43,7 +73,7 @@ void RDParser::Program()
     case ID:
     case INTEGER:
     case LONG:
-    case REAL:
+    case FLOAT:
     case BOOL:
     case CHAR:
     case DOUBLE:
@@ -57,7 +87,7 @@ void RDParser::Program()
         Program();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Program);
     }
 }
 
@@ -78,9 +108,9 @@ void RDParser::Type()
         // Type ::= long
         match(LONG);
         break;
-    case REAL:
+    case FLOAT:
         // Type ::= float
-        match(REAL);
+        match(FLOAT);
         break;
     case BOOL:
         // Type ::= bool
@@ -95,7 +125,7 @@ void RDParser::Type()
         match(DOUBLE);
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Type);
     }
 }
 
@@ -110,7 +140,7 @@ void RDParser::IdList()
         IdListK2();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_IdList);
     }
 }
 
@@ -127,7 +157,7 @@ void RDParser::IdListK2()
     case LBRACKET:
         // IdListK2 ::= [ integer ] Array IdListK3
         match(LBRACKET);
-        match(INTEGER);
+        match(NUM_INT);
         match(RBRACKET);
         Array();
         IdListK3();
@@ -136,7 +166,7 @@ void RDParser::IdListK2()
         // IdListK2 ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_IdListK2);
     }
 }
 
@@ -154,7 +184,7 @@ void RDParser::IdListK3()
         // IdListK3 ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_IdListK3);
     }
 }
 
@@ -171,16 +201,16 @@ void RDParser::Array()
     case LBRACKET:
         // Array ::= [ integer ] Array
         match(LBRACKET);
-        match(INTEGER);
+        match(NUM_INT);
         match(RBRACKET);
         Array();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Array);
     }
 }
 
-int RDParser::sync_TypeDecl[] = {TYPEDEF, ID, INTEGER, LONG, REAL, BOOL, CHAR, DOUBLE, END_OF_FILE};
+int RDParser::sync_TypeDecl[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 void RDParser::TypeDecl()
 {
     switch (lookAhead)
@@ -199,11 +229,11 @@ void RDParser::TypeDecl()
         match(SEMICOLON);
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_TypeDecl);
     }
 }
 
-int RDParser::sync_VarFn[] = {TYPEDEF, ID, INTEGER, LONG, REAL, BOOL, CHAR, DOUBLE, END_OF_FILE};
+int RDParser::sync_VarFn[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 void RDParser::VarFn()
 {
     switch (lookAhead)
@@ -211,7 +241,7 @@ void RDParser::VarFn()
     case ID:
     case INTEGER:
     case LONG:
-    case REAL:
+    case FLOAT:
     case BOOL:
     case CHAR:
     case DOUBLE:
@@ -220,11 +250,11 @@ void RDParser::VarFn()
         VarFnK();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_VarFn);
     }
 }
 
-int RDParser::sync_VarFnK[] = {TYPEDEF, ID, INTEGER, LONG, REAL, BOOL, CHAR, DOUBLE, END_OF_FILE};
+int RDParser::sync_VarFnK[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 void RDParser::VarFnK()
 {
     switch (lookAhead)
@@ -241,11 +271,11 @@ void RDParser::VarFnK()
         VarFnL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_VarFnK);
     }
 }
 
-int RDParser::sync_VarFnL[] = {TYPEDEF, ID, INTEGER, LONG, REAL, BOOL, CHAR, DOUBLE, END_OF_FILE};
+int RDParser::sync_VarFnL[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 void RDParser::VarFnL()
 {
     switch (lookAhead)
@@ -262,7 +292,7 @@ void RDParser::VarFnL()
         FunctionDeclL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_VarFnL);
     }
 }
 
@@ -274,7 +304,7 @@ void RDParser::VarDecl()
     case ID:
     case INTEGER:
     case LONG:
-    case REAL:
+    case FLOAT:
     case BOOL:
     case CHAR:
     case DOUBLE:
@@ -286,7 +316,7 @@ void RDParser::VarDecl()
         // VarDecl ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_VarDecl);
     }
 }
 
@@ -302,7 +332,7 @@ void RDParser::VarDeclK()
         VarDecl();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_VarDeclK);
     }
 }
 
@@ -314,7 +344,7 @@ void RDParser::FunctionDecl()
     case ID:
     case INTEGER:
     case LONG:
-    case REAL:
+    case FLOAT:
     case BOOL:
     case CHAR:
     case DOUBLE:
@@ -323,7 +353,7 @@ void RDParser::FunctionDecl()
         FunctionDeclK();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FunctionDecl);
     }
 }
 
@@ -344,11 +374,11 @@ void RDParser::FunctionDeclK()
         FunctionDeclL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FunctionDeclK);
     }
 }
 
-int RDParser::sync_FunctionDeclL[] = {TYPEDEF, ID, INTEGER, LONG, REAL, BOOL, CHAR, DOUBLE, END_OF_FILE};
+int RDParser::sync_FunctionDeclL[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 void RDParser::FunctionDeclL()
 {
     switch (lookAhead)
@@ -363,7 +393,7 @@ void RDParser::FunctionDeclL()
         match(RBRACE);
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FunctionDeclL);
     }
 }
 
@@ -382,7 +412,7 @@ void RDParser::FormalRest()
         // FormalRest ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FormalRest);
     }
 }
 
@@ -405,7 +435,7 @@ void RDParser::FormalRestK()
         FormalRest();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FormalRestK);
     }
 }
 
@@ -417,7 +447,7 @@ void RDParser::FormalList()
     case ID:
     case INTEGER:
     case LONG:
-    case REAL:
+    case FLOAT:
     case BOOL:
     case CHAR:
     case DOUBLE:
@@ -429,7 +459,7 @@ void RDParser::FormalList()
         // FormalList ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FormalList);
     }
 }
 
@@ -452,7 +482,7 @@ void RDParser::FormalListK()
         FormalRest();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FormalListK);
     }
 }
 
@@ -480,9 +510,9 @@ void RDParser::FunctionBody()
         match(SEMICOLON);
         FunctionBody();
         break;
-    case REAL:
+    case FLOAT:
         // FunctionBody ::= float IdList ; FunctionBody
-        match(REAL);
+        match(FLOAT);
         IdList();
         match(SEMICOLON);
         FunctionBody();
@@ -508,6 +538,7 @@ void RDParser::FunctionBody()
         match(SEMICOLON);
         FunctionBody();
         break;
+    case NUM_INT:
     case LBRACE:
     case MULT:
     case LPAREN:
@@ -520,6 +551,7 @@ void RDParser::FunctionBody()
     case RETURN:
     case THROW:
     case TRY:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -532,7 +564,7 @@ void RDParser::FunctionBody()
         // FunctionBody ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FunctionBody);
     }
 }
 
@@ -588,7 +620,7 @@ void RDParser::FunctionBodyL()
         FunctionBody();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_FunctionBodyL);
     }
 }
 
@@ -598,10 +630,10 @@ void RDParser::ExprList()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -617,7 +649,7 @@ void RDParser::ExprList()
         // ExprList ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ExprList);
     }
 }
 
@@ -627,10 +659,10 @@ void RDParser::ExprListTail()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -644,7 +676,7 @@ void RDParser::ExprListTail()
         ExprListTailL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ExprListTail);
     }
 }
 
@@ -662,7 +694,7 @@ void RDParser::ExprListTailL()
         // ExprListTailL ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ExprListTailL);
     }
 }
 
@@ -671,7 +703,7 @@ void RDParser::StmtList()
 {
     switch (lookAhead)
     {
-    case INTEGER:
+    case NUM_INT:
     case LBRACE:
     case MULT:
     case LPAREN:
@@ -684,7 +716,7 @@ void RDParser::StmtList()
     case RETURN:
     case THROW:
     case TRY:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -695,7 +727,7 @@ void RDParser::StmtList()
         StmtListK();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_StmtList);
     }
 }
 
@@ -704,7 +736,7 @@ void RDParser::StmtListK()
 {
     switch (lookAhead)
     {
-    case INTEGER:
+    case NUM_INT:
     case LBRACE:
     case MULT:
     case LPAREN:
@@ -717,7 +749,7 @@ void RDParser::StmtListK()
     case RETURN:
     case THROW:
     case TRY:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -731,7 +763,7 @@ void RDParser::StmtListK()
         // StmtListK ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_StmtListK);
     }
 }
 
@@ -741,7 +773,7 @@ void RDParser::StmtList2()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case LBRACE:
     case MULT:
     case LPAREN:
@@ -754,7 +786,7 @@ void RDParser::StmtList2()
     case RETURN:
     case THROW:
     case TRY:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -768,7 +800,7 @@ void RDParser::StmtList2()
         StmtList2K();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_StmtList2);
     }
 }
 
@@ -778,7 +810,7 @@ void RDParser::StmtList2K()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case LBRACE:
     case MULT:
     case LPAREN:
@@ -791,7 +823,7 @@ void RDParser::StmtList2K()
     case RETURN:
     case THROW:
     case TRY:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -808,7 +840,7 @@ void RDParser::StmtList2K()
         // StmtList2K ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_StmtList2K);
     }
 }
 
@@ -820,12 +852,12 @@ void RDParser::CaseBlock()
     case CASE:
         // CaseBlock ::= case integer : CaseBlockL
         match(CASE);
-        match(INTEGER);
+        match(NUM_INT);
         match(COLON);
         CaseBlockL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_CaseBlock);
     }
 }
 
@@ -834,7 +866,7 @@ void RDParser::CaseBlockL()
 {
     switch (lookAhead)
     {
-    case INTEGER:
+    case NUM_INT:
     case LBRACE:
     case MULT:
     case LPAREN:
@@ -847,7 +879,7 @@ void RDParser::CaseBlockL()
     case RETURN:
     case THROW:
     case TRY:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -862,19 +894,19 @@ void RDParser::CaseBlockL()
         CaseBlock();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_CaseBlockL);
     }
 }
 
-int RDParser::sync_Stmt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, INTEGER, REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, CASE, END_OF_FILE};
+int RDParser::sync_Stmt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, NUM_INT, NUM_REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, CASE, END_OF_FILE};
 void RDParser::Stmt()
 {
     switch (lookAhead)
     {
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -962,20 +994,20 @@ void RDParser::Stmt()
         Stmt2();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Stmt);
     }
 }
 
-int RDParser::sync_Stmt2[] = {IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, MINUS, SUM, EXCLAMATION, ID, INTEGER, REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, RBRACE, CATCH, SEMICOLON, CASE, END_OF_FILE};
+int RDParser::sync_Stmt2[] = {IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, MINUS, SUM, EXCLAMATION, ID, NUM_INT, NUM_REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, RBRACE, CATCH, SEMICOLON, CASE, END_OF_FILE};
 void RDParser::Stmt2()
 {
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1066,17 +1098,17 @@ void RDParser::Stmt2()
         Stmt2();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Stmt2);
     }
 }
 
-int RDParser::sync_IfOpt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, INTEGER, REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, MINUS, SUM, EXCLAMATION, ID, CATCH, CASE, SEMICOLON, END_OF_FILE};
+int RDParser::sync_IfOpt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, NUM_INT, NUM_REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, MINUS, SUM, EXCLAMATION, ID, CATCH, CASE, SEMICOLON, END_OF_FILE};
 void RDParser::IfOpt()
 {
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case LBRACE:
     case SEMICOLON:
     case RBRACE:
@@ -1093,7 +1125,7 @@ void RDParser::IfOpt()
     case THROW:
     case TRY:
     case CATCH:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1110,11 +1142,11 @@ void RDParser::IfOpt()
         ElseOpt();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_IfOpt);
     }
 }
 
-int RDParser::sync_ElseOpt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, INTEGER, REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, MINUS, SUM, EXCLAMATION, ID, CATCH, CASE, SEMICOLON, END_OF_FILE};
+int RDParser::sync_ElseOpt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, NUM_INT, NUM_REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, MINUS, SUM, EXCLAMATION, ID, CATCH, CASE, SEMICOLON, END_OF_FILE};
 void RDParser::ElseOpt()
 {
     switch (lookAhead)
@@ -1137,7 +1169,7 @@ void RDParser::ElseOpt()
         IfOpt();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ElseOpt);
     }
 }
 
@@ -1146,9 +1178,9 @@ void RDParser::ExpSemID()
 {
     switch (lookAhead)
     {
-    case INTEGER:
+    case NUM_INT:
         // ExpSemID ::= integer ExpSemIDL
-        match(INTEGER);
+        match(NUM_INT);
         ExpSemIDL();
         break;
     case MULT:
@@ -1164,9 +1196,9 @@ void RDParser::ExpSemID()
         match(RPAREN);
         ExpSemIDL();
         break;
-    case REAL:
+    case NUM_REAL:
         // ExpSemID ::= real ExpSemIDL
-        match(REAL);
+        match(NUM_REAL);
         ExpSemIDL();
         break;
     case LITERAL:
@@ -1196,7 +1228,7 @@ void RDParser::ExpSemID()
         ExpSemIDL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ExpSemID);
     }
 }
 
@@ -1206,10 +1238,10 @@ void RDParser::ExpSemIDL()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1225,7 +1257,7 @@ void RDParser::ExpSemIDL()
         // ExpSemIDL ::= ε
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ExpSemIDL);
     }
 }
 
@@ -1235,10 +1267,10 @@ void RDParser::Expr()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1252,7 +1284,7 @@ void RDParser::Expr()
         ExprL();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr);
     }
 }
 
@@ -1273,7 +1305,7 @@ void RDParser::ExprL()
         Expr();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_ExprL);
     }
 }
 
@@ -1283,10 +1315,10 @@ void RDParser::Expr1()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1300,7 +1332,7 @@ void RDParser::Expr1()
         Expr1L();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr1);
     }
 }
 
@@ -1322,7 +1354,7 @@ void RDParser::Expr1L()
         Expr1();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr1L);
     }
 }
 
@@ -1332,10 +1364,10 @@ void RDParser::Expr2()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1349,7 +1381,7 @@ void RDParser::Expr2()
         Expr2L();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr2);
     }
 }
 
@@ -1372,7 +1404,7 @@ void RDParser::Expr2L()
         Expr2();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr2L);
     }
 }
 
@@ -1382,10 +1414,10 @@ void RDParser::Expr3()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1399,7 +1431,7 @@ void RDParser::Expr3()
         Expr3L();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr3);
     }
 }
 
@@ -1428,7 +1460,7 @@ void RDParser::Expr3L()
         Expr3();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr3L);
     }
 }
 
@@ -1438,10 +1470,10 @@ void RDParser::Expr4()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1455,7 +1487,7 @@ void RDParser::Expr4()
         Expr4L();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr4);
     }
 }
 
@@ -1496,7 +1528,7 @@ void RDParser::Expr4L()
         Expr4();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr4L);
     }
 }
 
@@ -1506,10 +1538,10 @@ void RDParser::Expr5()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1523,7 +1555,7 @@ void RDParser::Expr5()
         Expr5L();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr5);
     }
 }
 
@@ -1563,7 +1595,7 @@ void RDParser::Expr5L()
         Expr5();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr5L);
     }
 }
 
@@ -1573,10 +1605,10 @@ void RDParser::Expr6()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1590,7 +1622,7 @@ void RDParser::Expr6()
         Expr6L();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr6);
     }
 }
 
@@ -1638,7 +1670,7 @@ void RDParser::Expr6L()
         Expr6();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr6L);
     }
 }
 
@@ -1648,10 +1680,10 @@ void RDParser::Expr7()
     switch (lookAhead)
     {
     case ID:
-    case INTEGER:
+    case NUM_INT:
     case MULT:
     case LPAREN:
-    case REAL:
+    case NUM_REAL:
     case LITERAL:
     case ASCII:
     case TRUE:
@@ -1676,7 +1708,7 @@ void RDParser::Expr7()
         Expr7();
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Expr7);
     }
 }
 
@@ -1690,9 +1722,9 @@ void RDParser::Primary()
         match(ID);
         PrimaryL();
         break;
-    case INTEGER:
+    case NUM_INT:
         // Primary ::= integer
-        match(INTEGER);
+        match(NUM_INT);
         break;
     case MULT:
         // Primary ::= * id
@@ -1705,9 +1737,9 @@ void RDParser::Primary()
         Expr();
         match(RPAREN);
         break;
-    case REAL:
+    case NUM_REAL:
         // Primary ::= real
-        match(REAL);
+        match(NUM_REAL);
         break;
     case LITERAL:
         // Primary ::= literal
@@ -1731,7 +1763,7 @@ void RDParser::Primary()
         match(ID);
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_Primary);
     }
 }
 
@@ -1769,6 +1801,6 @@ void RDParser::PrimaryL()
         match(RBRACKET);
         break;
     default:
-        printf("Syntax Error\n");
+        error(lookAhead, sync_PrimaryL);
     }
 }

@@ -16,14 +16,14 @@
 1665802239 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.c
 	"ErrorManager.h"
 
-1671244692 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.h
+1671486310 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.h
 	<stdio.h>
 	<stdlib.h>
 
 1665938845 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.c
 	"LexicalAnalyzer.h"
 
-1671242297 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.h
+1671486030 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.h
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -32,7 +32,7 @@
 	"ErrorManager.h"
 	"CExport.h"
 
-1671412990 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\tokendefinitions.h
+1671485490 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\tokendefinitions.h
 
 1665935267 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.c
 	<stdio.h>
@@ -51,10 +51,10 @@
 1665850744 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\tableentry.cpp
 	"TableEntry.h"
 
-1671413381 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.cpp
+1671485895 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.cpp
 	"ErrorManager.h"
 
-1666105525 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.cpp
+1671487528 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.cpp
 	"LexicalAnalyzer.h"
 
 1671286684 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.cpp
@@ -67,13 +67,14 @@
 	"CExport.h"
 	"RDParser.h"
 
-1671419950 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.h
+1671486173 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.h
 	<stdlib.h>
 	<iostream>
 	<cstring>
 	<string>
 	"LexicalAnalyzer.h"
+	"ErrorManager.h"
 
-1671413146 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.cpp
+1671487194 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.cpp
 	"RDParser.h"
 

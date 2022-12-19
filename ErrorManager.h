@@ -8,9 +8,14 @@
 void errorBufferDestructor();
 
 /**
- * Writes the error in the stderr output stream
+ * Writes a lexical error in the stderr output stream
 */
 void writeLexicalError(char *description, int line, int column);
+
+/**
+ * Writes a syntax error in the stderr output stream
+*/
+void writeSyntaxError(char *description, int line, int column);
 
 /**
  * Print errors stored at the error buffer on the stderr stream
