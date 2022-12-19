@@ -1,4 +1,18 @@
-int main(){
-    print("oioioioi")
-    return 0;
+int main (int *id, int id)
+{
+    int i;
+    int j;
+    bool teste;
+    int k;
+    i = 0;
+    while (k < i + 10)
+    {
+        k = 0;
+        teste = false;
+        while (i < j - 5 - k) {
+            k = k + i;
+        }            
+    }
+
+    return i + k;
 }

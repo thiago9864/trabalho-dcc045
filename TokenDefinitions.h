@@ -17,6 +17,7 @@
 #define RBRACKET 12
 #define LBRACE 13
 #define RBRACE 14
+#define TRIPLE_DOT 56
 
 // Math
 #define MULT 15
