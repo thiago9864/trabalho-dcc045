@@ -3,6 +3,10 @@
 
 #include <iostream>
 
+class Root;
+
+class TokenNode;
+
 class Program;
 
 class VarList;
@@ -82,6 +86,8 @@ class Visitor
 
 public:
     virtual ~Visitor() = default;
+
+    virtual void visit(TokenNode *node) = 0;
 
     virtual void visit(Program *node) = 0;
 
@@ -173,6 +179,8 @@ private:
 
 public:
     Print_AST();
+
+    void visit(TokenNode *node) override;
 
     void visit(Program *node) override;
 
