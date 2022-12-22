@@ -1,5 +1,5 @@
-#ifndef VISITOR_H
-#define VISITOR_H
+#ifndef VISITOR_AST_H
+#define VISITOR_AST_H
 
 #include <iostream>
 

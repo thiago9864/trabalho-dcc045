@@ -1,4 +1,5 @@
-#include "Visitor.h"
+#include "Visitor_AST.h"
+#include "Accept_AST.h"
 
 Print_AST::Print_AST()
 {
@@ -36,14 +37,14 @@ void Print_AST::visit(Program *node)
               << std::endl;
     this->printNode("PROGRAM");
 
-    if (node->VarList() != nullptr)
-        node->VarList()->accept(this);
+    if (node->FunctionList() != nullptr)
+        node->FunctionList()->accept(this);
 
     if (node->TypeList() != nullptr)
         node->TypeList()->accept(this);
 
-    if (node->Functions() != nullptr)
-        node->Functions()->accept(this);
+    if (node->VarList() != nullptr)
+        node->VarList()->accept(this);
 }
 
 void Print_AST::visit(VarList *node)
@@ -79,8 +80,6 @@ void Print_AST::visit(FunctionList *node)
         node->VarList()->accept(this);
     if (node->StmtList() != nullptr)
         node->StmtList()->accept(this);
-    if (node->FunctionList() != nullptr)
-        node->FunctionList()->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
 }
@@ -93,8 +92,6 @@ void Print_AST::visit(TypeList *node)
         node->VarList()->accept(this);
     if (node->Id() != nullptr)
         node->Id()->accept(this);
-    if (node->TypeList() != nullptr)
-        node->TypeList()->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
 }

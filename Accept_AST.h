@@ -1,7 +1,7 @@
 #ifndef ACCEPT_H
 #define ACCEPT_H
 
-#include "Visitor.h"
+#include "Visitor_AST.h"
 
 class Root
 {
@@ -38,36 +38,98 @@ public:
 class Program
 {
 private:
+    FunctionList *functions;
+    TypeList *typelist;
+    VarList *varlist;
+
 public:
+    Program(FunctionList *functions, TypeList *typelist, VarList *varlist);
+    ~Program();
+
+    inline FunctionList *FunctionList() { return functions; }
+    inline TypeList *TypeList() { return typelist; }
+    inline VarList *VarList() { return varlist; }
+
     virtual void accept(Visitor *v) = 0;
 };
 
 class VarList : public Program
 {
 private:
+    NameDecl *namedecl;
+    VarList *next;
+
 public:
+    VarList(NameDecl *namedecl, VarList *next);
+    ~VarList();
+
+    inline NameDecl *NameDecl() { return namedecl; };
+    inline VarList *Next() { return next; }
+
     virtual void accept(Visitor *v) = 0;
 };
 
 class FunctionList : public Program
 {
 private:
+    Type *type;
+    TokenNode *id;
+    VarList *varlist;
+    StmtList *stmtlist;
+    FunctionList *next;
+
 public:
+    FunctionList(Type *type,
+                 TokenNode *id,
+                 VarList *varlist,
+                 StmtList *stmtlist,
+                 FunctionList *next);
+
+    inline Type *Type() { return type; };
+    inline TokenNode *Id() { return id; }
+    inline VarList *VarList() { return varlist; }
+    inline StmtList *StmtList() { return stmtlist; }
+    inline FunctionList *Next() { return next; }
+
     virtual void accept(Visitor *v) = 0;
 };
 
 class TypeList : public Program
 {
 private:
+    VarList *varlist;
+    TokenNode *id;
+    TypeList *type;
+    TypeList *next;
+
 public:
+    TypeList(VarList *varlist,
+             TokenNode *id,
+             TypeList *next);
+    ~TypeList();
+
+    inline VarList *Varlist(){return varlist};
+    inline TokenNode *Id() { return id; };
+    inline TypeList *Next() { return next; };
+
     virtual void accept(Visitor *v) = 0;
 };
 
 class NameDecl : public VarList
 {
 private:
+    Type *type;
+    TokenNode *id;
+
 public:
-    virtual void accept(Visitor *v) = 0;
+    NameDecl(Type *type,
+             TokenNode *id);
+    ~NameDecl();
+
+    inline Type *Type(){return *type};
+    inline TokenNode *Id(){return *id} ?
+
+                                       virtual void accept(Visitor *v) = 0;
 };
 
 class Type : public FunctionList
