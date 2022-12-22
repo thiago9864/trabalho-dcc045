@@ -2,7 +2,7 @@
 
 RDParser::RDParser()
 {
-    printf("*************** Inicializa o parser ***************\n");
+    printf("[DEBUG] *************** Inicializa o parser ***************\n");
 }
 RDParser::~RDParser() {}
 
@@ -16,15 +16,18 @@ void RDParser::nextToken()
 {
     // Aqui obtem o nextToken do analisador léxico
     lookAhead = getNextToken();
+    //printf("lookAhead: %d \n", lookAhead);
     char *tokenName = getTokenName(lookAhead);
-    printf("[DEBUG] Token de lookAhead: %s\n", tokenName);
+    if(tokenName){
+       printf("[DEBUG] Token de lookAhead: %s\n", tokenName);
+    }
 }
 
 void RDParser::match(int token)
 {
     if (token != lookAhead)
     {
-        // Erro sintático
+        writeError(token);
     }
     else
     {
@@ -32,9 +35,22 @@ void RDParser::match(int token)
     }
 }
 
-static char errorTemplate[] = "Token Error: ";
+void RDParser::matchOrSkip(int token, const int *syncArr)
+{
+    if (token != lookAhead)
+    {
+        writeError(token);
+        syncError(syncArr);
+    }
+    else
+    {
+        nextToken();
+    }
+}
 
-void RDParser::error(int expectedToken, const int *syncArr)
+static char errorTemplate[] = "Token esperado: ";
+
+void RDParser::writeError(int expectedToken)
 {
     char *tokenName = getTokenName(expectedToken);
     int templateLen = 0;
@@ -42,10 +58,17 @@ void RDParser::error(int expectedToken, const int *syncArr)
     char *errStr = new char[templateLen + strlen(tokenName)];
     errStr[0] = '\0';
     strcat(errStr, errorTemplate);
-    strcat(errStr, tokenName);
+    //strcat(errStr, tokenName);
+    for(int i=0; tokenName[i] != '\0';i++){
+        errStr[i+templateLen] = tokenName[i];
+    }
 
     writeSyntaxError(errStr, getSourceCodeLine(), getSourceCodeColumn());
+}
 
+void RDParser::syncError(const int *syncArr)
+{
+    printf("syncError\n");
     int i = 0;
     while (lookAhead != END_OF_FILE)
     {
@@ -54,11 +77,12 @@ void RDParser::error(int expectedToken, const int *syncArr)
             if (lookAhead != syncArr[i])
             {
                 i++;
+            } else {
+                return;
             }
-            return;
         }
         i = 0;
-        getNextToken();
+        nextToken();
     }
 }
 
@@ -87,7 +111,8 @@ void RDParser::Program()
         Program();
         break;
     default:
-        error(lookAhead, sync_Program);
+        writeError(lookAhead);
+        syncError(sync_Program);
     }
 }
 
@@ -125,7 +150,8 @@ void RDParser::Type()
         match(DOUBLE);
         break;
     default:
-        error(lookAhead, sync_Type);
+        writeError(lookAhead);
+        syncError(sync_Type);
     }
 }
 
@@ -140,7 +166,8 @@ void RDParser::IdList()
         IdListK2();
         break;
     default:
-        error(lookAhead, sync_IdList);
+        writeError(lookAhead);
+        syncError(sync_IdList);
     }
 }
 
@@ -157,8 +184,8 @@ void RDParser::IdListK2()
     case LBRACKET:
         // IdListK2 ::= [ integer ] Array IdListK3
         match(LBRACKET);
-        match(NUM_INT);
-        match(RBRACKET);
+        matchOrSkip(NUM_INT, sync_IdListK2);
+        matchOrSkip(RBRACKET, sync_IdListK2);
         Array();
         IdListK3();
         break;
@@ -166,7 +193,8 @@ void RDParser::IdListK2()
         // IdListK2 ::= ε
         break;
     default:
-        error(lookAhead, sync_IdListK2);
+        writeError(lookAhead);
+        syncError(sync_IdListK2);
     }
 }
 
@@ -184,7 +212,8 @@ void RDParser::IdListK3()
         // IdListK3 ::= ε
         break;
     default:
-        error(lookAhead, sync_IdListK3);
+        writeError(lookAhead);
+        syncError(sync_IdListK3);
     }
 }
 
@@ -201,12 +230,13 @@ void RDParser::Array()
     case LBRACKET:
         // Array ::= [ integer ] Array
         match(LBRACKET);
-        match(NUM_INT);
-        match(RBRACKET);
+        matchOrSkip(NUM_INT, sync_Array);
+        matchOrSkip(RBRACKET, sync_Array);
         Array();
         break;
     default:
-        error(lookAhead, sync_Array);
+        writeError(lookAhead);
+        syncError(sync_Array);
     }
 }
 
@@ -218,18 +248,19 @@ void RDParser::TypeDecl()
     case TYPEDEF:
         // TypeDecl ::= typedef struct { Type IdList ; VarDecl } id ;
         match(TYPEDEF);
-        match(STRUCT);
-        match(LBRACE);
+        matchOrSkip(STRUCT, sync_TypeDecl);
+        matchOrSkip(LBRACE, sync_TypeDecl);
         Type();
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_TypeDecl);
         VarDecl();
-        match(RBRACE);
-        match(ID);
-        match(SEMICOLON);
+        matchOrSkip(RBRACE, sync_TypeDecl);
+        matchOrSkip(ID, sync_TypeDecl);
+        matchOrSkip(SEMICOLON, sync_TypeDecl);
         break;
     default:
-        error(lookAhead, sync_TypeDecl);
+        writeError(lookAhead);
+        syncError(sync_TypeDecl);
     }
 }
 
@@ -250,7 +281,8 @@ void RDParser::VarFn()
         VarFnK();
         break;
     default:
-        error(lookAhead, sync_VarFn);
+        writeError(lookAhead);
+        syncError(sync_VarFn);
     }
 }
 
@@ -267,11 +299,12 @@ void RDParser::VarFnK()
     case MULT:
         // VarFnK ::= * id VarFnL
         match(MULT);
-        match(ID);
+        matchOrSkip(ID, sync_VarFnK);
         VarFnL();
         break;
     default:
-        error(lookAhead, sync_VarFnK);
+        writeError(lookAhead);
+        syncError(sync_VarFnK);
     }
 }
 
@@ -292,7 +325,8 @@ void RDParser::VarFnL()
         FunctionDeclL();
         break;
     default:
-        error(lookAhead, sync_VarFnL);
+        writeError(lookAhead);
+        syncError(sync_VarFnL);
     }
 }
 
@@ -316,7 +350,8 @@ void RDParser::VarDecl()
         // VarDecl ::= ε
         break;
     default:
-        error(lookAhead, sync_VarDecl);
+        writeError(lookAhead);
+        syncError(sync_VarDecl);
     }
 }
 
@@ -328,11 +363,12 @@ void RDParser::VarDeclK()
     case ID:
         // VarDeclK ::= IdList ; VarDecl
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_VarDeclK);
         VarDecl();
         break;
     default:
-        error(lookAhead, sync_VarDeclK);
+        writeError(lookAhead);
+        syncError(sync_VarDeclK);
     }
 }
 
@@ -353,7 +389,8 @@ void RDParser::FunctionDecl()
         FunctionDeclK();
         break;
     default:
-        error(lookAhead, sync_FunctionDecl);
+        writeError(lookAhead);
+        syncError(sync_FunctionDecl);
     }
 }
 
@@ -370,11 +407,12 @@ void RDParser::FunctionDeclK()
     case MULT:
         // FunctionDeclK ::= * id FunctionDeclL
         match(MULT);
-        match(ID);
+        matchOrSkip(ID, sync_FunctionDeclK);
         FunctionDeclL();
         break;
     default:
-        error(lookAhead, sync_FunctionDeclK);
+        writeError(lookAhead);
+        syncError(sync_FunctionDeclK);
     }
 }
 
@@ -387,13 +425,14 @@ void RDParser::FunctionDeclL()
         // FunctionDeclL ::= ( FormalList ) { FunctionBody }
         match(LPAREN);
         FormalList();
-        match(RPAREN);
-        match(LBRACE);
+        matchOrSkip(RPAREN, sync_FunctionDeclL);
+        matchOrSkip(LBRACE, sync_FunctionDeclL);
         FunctionBody();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_FunctionDeclL);
         break;
     default:
-        error(lookAhead, sync_FunctionDeclL);
+        writeError(lookAhead);
+        syncError(sync_FunctionDeclL);
     }
 }
 
@@ -412,7 +451,8 @@ void RDParser::FormalRest()
         // FormalRest ::= ε
         break;
     default:
-        error(lookAhead, sync_FormalRest);
+        writeError(lookAhead);
+        syncError(sync_FormalRest);
     }
 }
 
@@ -430,12 +470,13 @@ void RDParser::FormalRestK()
     case MULT:
         // FormalRestK ::= * id Array FormalRest
         match(MULT);
-        match(ID);
+        matchOrSkip(ID, sync_FormalRestK);
         Array();
         FormalRest();
         break;
     default:
-        error(lookAhead, sync_FormalRestK);
+        writeError(lookAhead);
+        syncError(sync_FormalRestK);
     }
 }
 
@@ -459,7 +500,8 @@ void RDParser::FormalList()
         // FormalList ::= ε
         break;
     default:
-        error(lookAhead, sync_FormalList);
+        writeError(lookAhead);
+        syncError(sync_FormalList);
     }
 }
 
@@ -477,12 +519,13 @@ void RDParser::FormalListK()
     case MULT:
         // FormalListK ::= * id Array FormalRest
         match(MULT);
-        match(ID);
+        matchOrSkip(ID, sync_FormalListK);
         Array();
         FormalRest();
         break;
     default:
-        error(lookAhead, sync_FormalListK);
+        writeError(lookAhead);
+        syncError(sync_FormalListK);
     }
 }
 
@@ -500,42 +543,42 @@ void RDParser::FunctionBody()
         // FunctionBody ::= int IdList ; FunctionBody
         match(INTEGER);
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBody);
         FunctionBody();
         break;
     case LONG:
         // FunctionBody ::= long IdList ; FunctionBody
         match(LONG);
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBody);
         FunctionBody();
         break;
     case FLOAT:
         // FunctionBody ::= float IdList ; FunctionBody
         match(FLOAT);
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBody);
         FunctionBody();
         break;
     case BOOL:
         // FunctionBody ::= bool IdList ; FunctionBody
         match(BOOL);
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBody);
         FunctionBody();
         break;
     case CHAR:
         // FunctionBody ::= char IdList ; FunctionBody
         match(CHAR);
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBody);
         FunctionBody();
         break;
     case DOUBLE:
         // FunctionBody ::= double IdList ; FunctionBody
         match(DOUBLE);
         IdList();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBody);
         FunctionBody();
         break;
     case NUM_INT:
@@ -564,7 +607,8 @@ void RDParser::FunctionBody()
         // FunctionBody ::= ε
         break;
     default:
-        error(lookAhead, sync_FunctionBody);
+        writeError(lookAhead);
+        syncError(sync_FunctionBody);
     }
 }
 
@@ -583,8 +627,8 @@ void RDParser::FunctionBodyL()
         // FunctionBodyL ::= [ Expr ] ; FunctionBody
         match(LBRACKET);
         Expr();
-        match(RBRACKET);
-        match(SEMICOLON);
+        matchOrSkip(RBRACKET, sync_FunctionBodyL);
+        matchOrSkip(SEMICOLON, sync_FunctionBodyL);
         FunctionBody();
         break;
     case RBRACE:
@@ -594,33 +638,34 @@ void RDParser::FunctionBodyL()
         // FunctionBodyL ::= ( ExprList ) ; FunctionBody
         match(LPAREN);
         ExprList();
-        match(RPAREN);
-        match(SEMICOLON);
+        matchOrSkip(RPAREN, sync_FunctionBodyL);
+        matchOrSkip(SEMICOLON, sync_FunctionBodyL);
         FunctionBody();
         break;
     case DOT:
         // FunctionBodyL ::= . Expr ; FunctionBody
         match(DOT);
         Expr();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBodyL);
         FunctionBody();
         break;
     case POINTER:
         // FunctionBodyL ::= -> Expr ; FunctionBody
         match(POINTER);
         Expr();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBodyL);
         FunctionBody();
         break;
     case ASSIGN:
         // FunctionBodyL ::= = StmtList2K ; FunctionBody
         match(ASSIGN);
         StmtList2K();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_FunctionBodyL);
         FunctionBody();
         break;
     default:
-        error(lookAhead, sync_FunctionBodyL);
+        writeError(lookAhead);
+        syncError(sync_FunctionBodyL);
     }
 }
 
@@ -649,7 +694,8 @@ void RDParser::ExprList()
         // ExprList ::= ε
         break;
     default:
-        error(lookAhead, sync_ExprList);
+        writeError(lookAhead);
+        syncError(sync_ExprList);
     }
 }
 
@@ -676,7 +722,8 @@ void RDParser::ExprListTail()
         ExprListTailL();
         break;
     default:
-        error(lookAhead, sync_ExprListTail);
+        writeError(lookAhead);
+        syncError(sync_ExprListTail);
     }
 }
 
@@ -694,7 +741,8 @@ void RDParser::ExprListTailL()
         // ExprListTailL ::= ε
         break;
     default:
-        error(lookAhead, sync_ExprListTailL);
+        writeError(lookAhead);
+        syncError(sync_ExprListTailL);
     }
 }
 
@@ -727,7 +775,8 @@ void RDParser::StmtList()
         StmtListK();
         break;
     default:
-        error(lookAhead, sync_StmtList);
+        writeError(lookAhead);
+        syncError(sync_StmtList);
     }
 }
 
@@ -763,7 +812,8 @@ void RDParser::StmtListK()
         // StmtListK ::= ε
         break;
     default:
-        error(lookAhead, sync_StmtListK);
+        writeError(lookAhead);
+        syncError(sync_StmtListK);
     }
 }
 
@@ -800,7 +850,8 @@ void RDParser::StmtList2()
         StmtList2K();
         break;
     default:
-        error(lookAhead, sync_StmtList2);
+        writeError(lookAhead);
+        syncError(sync_StmtList2);
     }
 }
 
@@ -840,7 +891,8 @@ void RDParser::StmtList2K()
         // StmtList2K ::= ε
         break;
     default:
-        error(lookAhead, sync_StmtList2K);
+        writeError(lookAhead);
+        syncError(sync_StmtList2K);
     }
 }
 
@@ -852,12 +904,13 @@ void RDParser::CaseBlock()
     case CASE:
         // CaseBlock ::= case integer : CaseBlockL
         match(CASE);
-        match(NUM_INT);
-        match(COLON);
+        matchOrSkip(NUM_INT, sync_CaseBlock);
+        matchOrSkip(COLON, sync_CaseBlock);
         CaseBlockL();
         break;
     default:
-        error(lookAhead, sync_CaseBlock);
+        writeError(lookAhead);
+        syncError(sync_CaseBlock);
     }
 }
 
@@ -894,7 +947,8 @@ void RDParser::CaseBlockL()
         CaseBlock();
         break;
     default:
-        error(lookAhead, sync_CaseBlockL);
+        writeError(lookAhead);
+        syncError(sync_CaseBlockL);
     }
 }
 
@@ -914,42 +968,42 @@ void RDParser::Stmt()
     case AMP:
         // Stmt ::= ExpSemID ;
         ExpSemID();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_Stmt);
         break;
     case LBRACE:
         // Stmt ::= { StmtList2 }
         match(LBRACE);
         StmtList2();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_Stmt);
         break;
     case IF:
         // Stmt ::= if ( Expr ) { Stmt2 } IfOpt
         match(IF);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt);
         Expr();
-        match(RPAREN);
-        match(LBRACE);
+        matchOrSkip(RPAREN, sync_Stmt);
+        matchOrSkip(LBRACE, sync_Stmt);
         Stmt2();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_Stmt);
         IfOpt();
         break;
     case WHILE:
         // Stmt ::= while ( Expr ) Stmt2
         match(WHILE);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt);
         Expr();
-        match(RPAREN);
+        matchOrSkip(RPAREN, sync_Stmt);
         Stmt2();
         break;
     case SWITCH:
         // Stmt ::= switch ( Expr ) { CaseBlock }
         match(SWITCH);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt);
         Expr();
-        match(RPAREN);
-        match(LBRACE);
+        matchOrSkip(RPAREN, sync_Stmt);
+        matchOrSkip(LBRACE, sync_Stmt);
         CaseBlock();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_Stmt);
         break;
     case BREAK:
         // Stmt ::= break ;
@@ -959,24 +1013,24 @@ void RDParser::Stmt()
     case PRINT:
         // Stmt ::= print ( ExprList ) ;
         match(PRINT);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt);
         ExprList();
-        match(RPAREN);
-        match(SEMICOLON);
+        matchOrSkip(RPAREN, sync_Stmt);
+        matchOrSkip(SEMICOLON, sync_Stmt);
         break;
     case READLN:
         // Stmt ::= readln ( Expr ) ;
         match(READLN);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt);
         Expr();
-        match(RPAREN);
-        match(SEMICOLON);
+        matchOrSkip(RPAREN, sync_Stmt);
+        matchOrSkip(SEMICOLON, sync_Stmt);
         break;
     case RETURN:
         // Stmt ::= return Expr ;
         match(RETURN);
         Expr();
-        match(SEMICOLON);
+       // matchOrSkip(SEMICOLON, sync_Stmt);
         break;
     case THROW:
         // Stmt ::= throw ;
@@ -987,18 +1041,19 @@ void RDParser::Stmt()
         // Stmt ::= try Stmt2 catch ( ... ) Stmt2
         match(TRY);
         Stmt2();
-        match(CATCH);
-        match(LPAREN);
-        match(TRIPLE_DOT);
-        match(RPAREN);
+        matchOrSkip(CATCH, sync_Stmt);
+        matchOrSkip(LPAREN, sync_Stmt);
+        matchOrSkip(TRIPLE_DOT, sync_Stmt);
+        matchOrSkip(RPAREN, sync_Stmt);
         Stmt2();
         break;
     default:
-        error(lookAhead, sync_Stmt);
+        writeError(lookAhead);
+        syncError(sync_Stmt);
     }
 }
 
-int RDParser::sync_Stmt2[] = {IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, MINUS, SUM, EXCLAMATION, ID, NUM_INT, NUM_REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, RBRACE, CATCH, SEMICOLON, CASE, END_OF_FILE};
+int RDParser::sync_Stmt2[] = {IF, RBRACE, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, MINUS, SUM, EXCLAMATION, ID, NUM_INT, NUM_REAL, LITERAL, ASCII, LPAREN, TRUE, FALSE, AMP, MULT, RBRACE, CATCH, SEMICOLON, CASE, END_OF_FILE};
 void RDParser::Stmt2()
 {
     switch (lookAhead)
@@ -1018,87 +1073,88 @@ void RDParser::Stmt2()
     case EXCLAMATION:
         // Stmt2 ::= Expr ;
         Expr();
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case LBRACE:
         // Stmt2 ::= { StmtList2 }
         match(LBRACE);
         StmtList2();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_Stmt2);
         break;
     case IF:
         // Stmt2 ::= if ( Expr ) { Stmt2 } IfOpt
         match(IF);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt2);
         Expr();
-        match(RPAREN);
-        match(LBRACE);
+        matchOrSkip(RPAREN, sync_Stmt2);
+        matchOrSkip(LBRACE, sync_Stmt2);
         Stmt2();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_Stmt2);
         IfOpt();
         break;
     case WHILE:
         // Stmt2 ::= while ( Expr ) Stmt2
         match(WHILE);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt2);
         Expr();
-        match(RPAREN);
+        matchOrSkip(RPAREN, sync_Stmt2);
         Stmt2();
         break;
     case SWITCH:
         // Stmt2 ::= switch ( Expr ) { CaseBlock }
         match(SWITCH);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt2);
         Expr();
-        match(RPAREN);
-        match(LBRACE);
+        matchOrSkip(RPAREN, sync_Stmt2);
+        matchOrSkip(LBRACE, sync_Stmt2);
         CaseBlock();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_Stmt2);
         break;
     case BREAK:
         // Stmt2 ::= break ;
         match(BREAK);
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case PRINT:
         // Stmt2 ::= print ( ExprList ) ;
         match(PRINT);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt2);
         ExprList();
-        match(RPAREN);
-        match(SEMICOLON);
+        matchOrSkip(RPAREN, sync_Stmt2);
+        matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case READLN:
         // Stmt2 ::= readln ( Expr ) ;
         match(READLN);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_Stmt2);
         Expr();
-        match(RPAREN);
-        match(SEMICOLON);
+        matchOrSkip(RPAREN, sync_Stmt2);
+        matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case RETURN:
         // Stmt2 ::= return Expr ;
         match(RETURN);
         Expr();
-        match(SEMICOLON);
+        //matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case THROW:
         // Stmt2 ::= throw ;
         match(THROW);
-        match(SEMICOLON);
+        matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case TRY:
         // Stmt2 ::= try Stmt2 catch ( ... ) Stmt2
         match(TRY);
         Stmt2();
-        match(CATCH);
-        match(LPAREN);
-        match(TRIPLE_DOT);
-        match(RPAREN);
+        matchOrSkip(CATCH, sync_Stmt2);
+        matchOrSkip(LPAREN, sync_Stmt2);
+        matchOrSkip(TRIPLE_DOT, sync_Stmt2);
+        matchOrSkip(RPAREN, sync_Stmt2);
         Stmt2();
         break;
     default:
-        error(lookAhead, sync_Stmt2);
+        writeError(lookAhead);
+        syncError(sync_Stmt2);
     }
 }
 
@@ -1142,7 +1198,8 @@ void RDParser::IfOpt()
         ElseOpt();
         break;
     default:
-        error(lookAhead, sync_IfOpt);
+        writeError(lookAhead);
+        syncError(sync_IfOpt);
     }
 }
 
@@ -1155,21 +1212,22 @@ void RDParser::ElseOpt()
         // ElseOpt ::= { Stmt2 }
         match(LBRACE);
         Stmt2();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_ElseOpt);
         break;
     case IF:
         // ElseOpt ::= if ( Expr ) { Stmt2 } IfOpt
         match(IF);
-        match(LPAREN);
+        matchOrSkip(LPAREN, sync_ElseOpt);
         Expr();
-        match(RPAREN);
-        match(LBRACE);
+        matchOrSkip(RPAREN, sync_ElseOpt);
+        matchOrSkip(LBRACE, sync_ElseOpt);
         Stmt2();
-        match(RBRACE);
+        matchOrSkip(RBRACE, sync_ElseOpt);
         IfOpt();
         break;
     default:
-        error(lookAhead, sync_ElseOpt);
+        writeError(lookAhead);
+        syncError(sync_ElseOpt);
     }
 }
 
@@ -1186,14 +1244,14 @@ void RDParser::ExpSemID()
     case MULT:
         // ExpSemID ::= * id ExpSemIDL
         match(MULT);
-        match(ID);
+        matchOrSkip(ID, sync_ExpSemID);
         ExpSemIDL();
         break;
     case LPAREN:
         // ExpSemID ::= ( Expr ) ExpSemIDL
         match(LPAREN);
         Expr();
-        match(RPAREN);
+        matchOrSkip(RPAREN, sync_ExpSemID);
         ExpSemIDL();
         break;
     case NUM_REAL:
@@ -1224,11 +1282,12 @@ void RDParser::ExpSemID()
     case AMP:
         // ExpSemID ::= & id ExpSemIDL
         match(AMP);
-        match(ID);
+        matchOrSkip(ID, sync_ExpSemID);
         ExpSemIDL();
         break;
     default:
-        error(lookAhead, sync_ExpSemID);
+        writeError(lookAhead);
+        syncError(sync_ExpSemID);
     }
 }
 
@@ -1257,7 +1316,8 @@ void RDParser::ExpSemIDL()
         // ExpSemIDL ::= ε
         break;
     default:
-        error(lookAhead, sync_ExpSemIDL);
+        writeError(lookAhead);
+        syncError(sync_ExpSemIDL);
     }
 }
 
@@ -1284,7 +1344,8 @@ void RDParser::Expr()
         ExprL();
         break;
     default:
-        error(lookAhead, sync_Expr);
+        writeError(lookAhead);
+        syncError(sync_Expr);
     }
 }
 
@@ -1305,7 +1366,8 @@ void RDParser::ExprL()
         Expr();
         break;
     default:
-        error(lookAhead, sync_ExprL);
+        writeError(lookAhead);
+        syncError(sync_ExprL);
     }
 }
 
@@ -1332,7 +1394,8 @@ void RDParser::Expr1()
         Expr1L();
         break;
     default:
-        error(lookAhead, sync_Expr1);
+        writeError(lookAhead);
+        syncError(sync_Expr1);
     }
 }
 
@@ -1354,7 +1417,8 @@ void RDParser::Expr1L()
         Expr1();
         break;
     default:
-        error(lookAhead, sync_Expr1L);
+        writeError(lookAhead);
+        syncError(sync_Expr1L);
     }
 }
 
@@ -1381,7 +1445,8 @@ void RDParser::Expr2()
         Expr2L();
         break;
     default:
-        error(lookAhead, sync_Expr2);
+        writeError(lookAhead);
+        syncError(sync_Expr2);
     }
 }
 
@@ -1404,7 +1469,8 @@ void RDParser::Expr2L()
         Expr2();
         break;
     default:
-        error(lookAhead, sync_Expr2L);
+        writeError(lookAhead);
+        syncError(sync_Expr2L);
     }
 }
 
@@ -1431,7 +1497,8 @@ void RDParser::Expr3()
         Expr3L();
         break;
     default:
-        error(lookAhead, sync_Expr3);
+        writeError(lookAhead);
+        syncError(sync_Expr3);
     }
 }
 
@@ -1460,7 +1527,8 @@ void RDParser::Expr3L()
         Expr3();
         break;
     default:
-        error(lookAhead, sync_Expr3L);
+        writeError(lookAhead);
+        syncError(sync_Expr3L);
     }
 }
 
@@ -1487,7 +1555,8 @@ void RDParser::Expr4()
         Expr4L();
         break;
     default:
-        error(lookAhead, sync_Expr4);
+        writeError(lookAhead);
+        syncError(sync_Expr4);
     }
 }
 
@@ -1528,7 +1597,8 @@ void RDParser::Expr4L()
         Expr4();
         break;
     default:
-        error(lookAhead, sync_Expr4L);
+        writeError(lookAhead);
+        syncError(sync_Expr4L);
     }
 }
 
@@ -1555,7 +1625,8 @@ void RDParser::Expr5()
         Expr5L();
         break;
     default:
-        error(lookAhead, sync_Expr5);
+        writeError(lookAhead);
+        syncError(sync_Expr5);
     }
 }
 
@@ -1595,7 +1666,8 @@ void RDParser::Expr5L()
         Expr5();
         break;
     default:
-        error(lookAhead, sync_Expr5L);
+        writeError(lookAhead);
+        syncError(sync_Expr5L);
     }
 }
 
@@ -1622,7 +1694,8 @@ void RDParser::Expr6()
         Expr6L();
         break;
     default:
-        error(lookAhead, sync_Expr6);
+        writeError(lookAhead);
+        syncError(sync_Expr6);
     }
 }
 
@@ -1670,7 +1743,8 @@ void RDParser::Expr6L()
         Expr6();
         break;
     default:
-        error(lookAhead, sync_Expr6L);
+        writeError(lookAhead);
+        syncError(sync_Expr6L);
     }
 }
 
@@ -1708,7 +1782,8 @@ void RDParser::Expr7()
         Expr7();
         break;
     default:
-        error(lookAhead, sync_Expr7);
+        writeError(lookAhead);
+        syncError(sync_Expr7);
     }
 }
 
@@ -1729,13 +1804,13 @@ void RDParser::Primary()
     case MULT:
         // Primary ::= * id
         match(MULT);
-        match(ID);
+        matchOrSkip(ID, sync_Primary);
         break;
     case LPAREN:
         // Primary ::= ( Expr )
         match(LPAREN);
         Expr();
-        match(RPAREN);
+        matchOrSkip(RPAREN, sync_Primary);
         break;
     case NUM_REAL:
         // Primary ::= real
@@ -1760,10 +1835,11 @@ void RDParser::Primary()
     case AMP:
         // Primary ::= & id
         match(AMP);
-        match(ID);
+        matchOrSkip(ID, sync_Primary);
         break;
     default:
-        error(lookAhead, sync_Primary);
+        writeError(lookAhead);
+        syncError(sync_Primary);
     }
 }
 
@@ -1798,9 +1874,10 @@ void RDParser::PrimaryL()
         // PrimaryL ::= [ Expr ]
         match(LBRACKET);
         Expr();
-        match(RBRACKET);
+        matchOrSkip(RBRACKET, sync_PrimaryL);
         break;
     default:
-        error(lookAhead, sync_PrimaryL);
+        writeError(lookAhead);
+        syncError(sync_PrimaryL);
     }
 }

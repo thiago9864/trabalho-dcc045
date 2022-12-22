@@ -15,8 +15,10 @@ private:
 
     void nextToken();
     void match(int token);
+    void matchOrSkip(int token, const int *syncArr);
 
-    void error(int expectedToken, const int *syncArr);
+    void writeError(int expectedToken);
+    void syncError(const int *syncArr);
 
     // Functions of nonterminals
     static int sync_Program[];
