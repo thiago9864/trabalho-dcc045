@@ -1,3 +1,7 @@
+int teste, teste2[5];
+
+typedef struct { float a ; int b ; } TypeTest;
+
 int main (int *id, int id)
 {
     int i;
@@ -12,6 +16,12 @@ int main (int *id, int id)
         while (i < j - 5 - k) {
             k = k + i;
         }            
+    }
+
+    if(teste2[2] > teste){
+        print("100");
+    } else {
+        print("150");
     }
 
     return 0;
