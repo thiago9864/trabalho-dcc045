@@ -94,11 +94,9 @@ private:
     int height;
 
     void up_height();
-
     void down_height();
 
     void printNode(const char *node);
-
     void printLexeme(const char *node, const char *lexeme);
 
 public:
