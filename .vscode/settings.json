@@ -70,15 +70,6 @@
     "lexicalanalyzer.h": "c",
     "symboltable.h": "c",
     "cexport.h": "c",
-    "tokendefinitions.h": "c",
-    "array": "cpp",
-    "*.tcc": "cpp",
-    "cstdarg": "cpp",
-    "cwctype": "cpp",
-    "unordered_map": "cpp",
-    "functional": "cpp",
-    "memory_resource": "cpp",
-    "numeric": "cpp",
-    "random": "cpp"
+    "tokendefinitions.h": "c"
   }
 }
