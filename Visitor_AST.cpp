@@ -39,10 +39,8 @@ void Print_AST::visit(Program *node)
 
     if (node->FunctionList() != nullptr)
         node->FunctionList()->accept(this);
-
     if (node->TypeList() != nullptr)
         node->TypeList()->accept(this);
-
     if (node->VarList() != nullptr)
         node->VarList()->accept(this);
 }
@@ -53,7 +51,6 @@ void Print_AST::visit(VarList *node)
 
     if (node->Next() != nullptr)
         node->Next()->accept(this);
-
     if (node->NameDecl() != nullptr)
         node->NameDecl()->accept(this);
 }
@@ -122,8 +119,6 @@ void Print_AST::visit(StmtList *node)
 
     if (node->Stmt() != nullptr)
         node->Stmt()->accept(this);
-    if (node->StmtList() != nullptr)
-        node->StmtList->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
 }
@@ -193,9 +188,6 @@ void Print_AST::visit(Switch *node)
 void Print_AST::visit(Break *node)
 {
     this->printNode("BREAK");
-
-    if (node->Next() != nullptr)
-        node->Next()->accept(this);
 }
 
 void Print_AST::visit(PrintLn *node)
@@ -237,9 +229,6 @@ void Print_AST::visit(CaseBlock *node)
 void Print_AST::visit(Throw *node)
 {
     this->printNode("THROW");
-
-    if (node->Next() != nullptr)
-        node->Next()->accept(this);
 }
 
 void Print_AST::visit(ExpList *node)
@@ -294,8 +283,8 @@ void Print_AST::visit(Exp *node)
         node->AdditionOP()->accept(this);
     if (node->MultiplicationOP() != nullptr)
         node->MultiplicationOP()->accept(this);
-    if (node->Boolean_OP() != nullptr)
-        node->Boolean_OP()->accept(this);
+    if (node->BooleanOP() != nullptr)
+        node->BooleanOP()->accept(this);
     if (node->BitwiseOP() != nullptr)
         node->BitwiseOP()->accept(this);
     if (node->Not() != nullptr)
@@ -427,17 +416,11 @@ void Print_AST::visit(BitwiseOP *node)
 void Print_AST::visit(True *node)
 {
     this->printNode("TRUE");
-
-    if (node->Next() != nullptr)
-        node->Next()->accept(this);
 }
 
 void Print_AST::visit(False *node)
 {
     this->printNode("FALSE");
-
-    if (node->Next() != nullptr)
-        node->Next()->accept(this);
 }
 
 void Print_AST::visit(Not *node)

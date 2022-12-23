@@ -38,7 +38,7 @@ public:
     virtual void accept(Visitor *v);
 };
 
-class Program
+class Program : public TokenNode
 {
 private:
     FunctionList *functions;
@@ -56,7 +56,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class VarList : public Program
+class VarList : public TokenNode //: public Program
 {
 private:
     NameDecl *namedecl;
@@ -72,7 +72,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class FunctionList //: public Program
+class FunctionList : public TokenNode //: public Program
 {
 private:
     Type *type;
@@ -93,7 +93,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class TypeList //: public Program
+class TypeList : public TokenNode //: public Program
 {
 private:
     VarList *varlist;
@@ -132,13 +132,15 @@ class Type : public FunctionList
 private:
     TokenNode *id;
     Pointer *pointer;
+    TokenNode *primitive;
 
 public:
-    Type(TokenNode *id, Pointer *pointer);
+    Type(TokenNode *id, Pointer *pointer, TokenNode *primitive);
     ~Type();
 
     inline TokenNode *Id() { return id; };
     inline Pointer *Pointer() { return pointer; };
+    inline TokenNode *Primitive() { return primitive; };
 
     virtual void accept(Visitor *v) = 0;
 };
@@ -173,7 +175,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class Stmt : public StmtList
+class Stmt : public TokenNode //: public StmtList
 {
 private:
     If *if_;
@@ -190,7 +192,18 @@ private:
     Exp *exp;
 
 public:
-    Stmt(If *if_, While *while_, Switch *switch_, Break *break_, PrintLn *println, Read *read, Return *return_, Throw *throw_, StmtList *stmtlist, Call *call, Try *try_, Exp *exp);
+    Stmt(If *if_,
+         While *while_,
+         Switch *switch_,
+         Break *break_,
+         PrintLn *println,
+         Read *read,
+         Return *return_,
+         Throw *throw_,
+         StmtList *stmtlist,
+         Call *call,
+         Try *try_,
+         Exp *exp);
     ~Stmt();
 
     inline If *If() { return if_; };
@@ -209,7 +222,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class If //: public Stmt
+class If : public TokenNode //: public Stmt
 {
 private:
     Exp *exp;
@@ -227,7 +240,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class While //: public Stmt
+class While : public TokenNode //: public Stmt
 {
     Exp *exp;
     Stmt *stmt;
@@ -242,7 +255,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class Switch //: public Stmt
+class Switch : public TokenNode //: public Stmt
 {
 private:
     Exp *exp;
@@ -281,7 +294,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class Read //: public Stmt
+class Read : public TokenNode //: public Stmt
 {
 private:
     Exp *exp;
@@ -295,7 +308,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class Return //: public Stmt
+class Return : public TokenNode //: public Stmt
 {
 private:
     Exp *exp;
@@ -353,7 +366,68 @@ public:
 class Exp : public Stmt
 {
 private:
+    TokenNode *id;
+    TokenNode *number;
+    TokenNode *literal;
+    TokenNode *char_;
+    NameExp *nameexp;
+    PointerValueExp *pointervalueexp;
+    AddressValue *addressvalue;
+    PointerValue *pointervalue;
+    Array *array;
+    Assign *assign;
+    RelationalOP *relationalop;
+    AdditionOP *additionop;
+    MultiplicationOP *multiplciationop;
+    BooleanOP *booleanop;
+    BitwiseOP *bitwiseop;
+    Not *not_;
+    Sign *sign;
+    True *true_;
+    False *false_;
+
 public:
+    Exp(TokenNode *id,
+        TokenNode *number,
+        TokenNode *literal,
+        TokenNode *char_,
+        NameExp *nameexp,
+        PointerValueExp *pointervalueexp,
+        AddressValue *addressvalue,
+        PointerValue *pointervalue,
+        Array *array,
+        Assign *assign,
+        RelationalOP *relationalop,
+        AdditionOP *additionop,
+        MultiplicationOP *multiplciationop,
+        BooleanOP *booleanop,
+        BitwiseOP *bitwiseop,
+        Not *not_,
+        Sign *sign,
+        True *true_,
+        False *false_);
+    ~Exp();
+
+    inline TokenNode *Id() { return id; };
+    inline TokenNode *Number() { return number; };
+    inline TokenNode *Literal() { return literal; };
+    inline TokenNode *Char() { return char_; };
+    inline NameExp *NameExp() { return nameexp; };
+    inline PointerValueExp *PointerValueExp() { return pointervalueexp; };
+    inline AddressValue *AddressValue() { return addressvalue; };
+    inline PointerValue *PointerValue() { return pointervalue; };
+    inline Array *Array() { return array; };
+    inline Assign *Assign() { return assign; };
+    inline RelationalOP *RelationalOP() { return relationalop; };
+    inline AdditionOP *AdditionOP() { return additionop; };
+    inline MultiplicationOP *MultiplicationOP() { return multiplciationop; };
+    inline BooleanOP *BooleanOP() { return booleanop; };
+    inline BitwiseOP *BitwiseOP() { return bitwiseop; };
+    inline Not *Not() { return not_; };
+    inline Sign *Sign() { return sign; };
+    inline True *True() { return true_; };
+    inline False *False() { return false_; };
+
     virtual void accept(Visitor *v) = 0;
 };
 
@@ -374,7 +448,7 @@ public:
     virtual void accept(Visitor *v) = 0;
 };
 
-class ExpList //: public PrintLn
+class ExpList : public TokenNode //: public PrintLn
 {
 private:
     Exp *exp;
