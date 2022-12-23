@@ -88,8 +88,8 @@ void Print_AST::visit(TypeList *node)
 {
     this->printNode("TYPE_LIST");
 
-    if (node->VarList() != nullptr)
-        node->VarList()->accept(this);
+    if (node->Varlist() != nullptr)
+        node->Varlist()->accept(this);
     if (node->Id() != nullptr)
         node->Id()->accept(this);
     if (node->Next() != nullptr)
@@ -123,7 +123,7 @@ void Print_AST::visit(StmtList *node)
     if (node->Stmt() != nullptr)
         node->Stmt()->accept(this);
     if (node->StmtList() != nullptr)
-        node->StmtList()->accept(this);
+        node->StmtList->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
 }
@@ -164,8 +164,10 @@ void Print_AST::visit(If *node)
 
     if (node->Exp() != nullptr)
         node->Exp()->accept(this);
-    if (node->Stmt() != nullptr)
-        node->Stmt()->accept(this);
+    if (node->Stmt1() != nullptr)
+        node->Stmt1()->accept(this);
+    if (node->Stmt2() != nullptr)
+        node->Stmt2()->accept(this);
 }
 
 void Print_AST::visit(While *node)
@@ -228,8 +230,6 @@ void Print_AST::visit(CaseBlock *node)
         node->Num()->accept(this);
     if (node->StmtList() != nullptr)
         node->StmtList()->accept(this);
-    if (node->CaseBlock() != nullptr)
-        node->CaseBlock()->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
 }
@@ -248,8 +248,6 @@ void Print_AST::visit(ExpList *node)
 
     if (node->Exp() != nullptr)
         node->Exp()->accept(this);
-    if (node->ExpList() != nullptr)
-        node->ExpList()->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
 }
@@ -258,8 +256,10 @@ void Print_AST::visit(Try *node)
 {
     this->printNode("TRY");
 
-    if (node->Stmt() != nullptr)
-        node->Stmt()->accept(this);
+    if (node->Stmt1() != nullptr)
+        node->Stmt1()->accept(this);
+    if (node->Stmt2() != nullptr)
+        node->Stmt2()->accept(this);
 }
 
 void Print_AST::visit(Exp *node)
@@ -312,8 +312,10 @@ void Print_AST::visit(Assign *node)
 {
     this->printNode("ASSIGN");
 
-    if (node->Exp() != nullptr)
-        node->Exp()->accept(this);
+    if (node->Exp1() != nullptr)
+        node->Exp1()->accept(this);
+    if (node->Exp2() != nullptr)
+        node->Exp2()->accept(this);
 }
 
 void Print_AST::visit(NameExp *node)
