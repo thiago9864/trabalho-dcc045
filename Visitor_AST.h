@@ -1,6 +1,8 @@
 #ifndef VISITOR_AST_H
 #define VISITOR_AST_H
 
+#include "LexicalAnalyzer.h"
+#include "Accept_AST.h"
 #include <iostream>
 
 class Root;

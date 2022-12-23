@@ -6,19 +6,13 @@
 class Root
 {
 private:
-    int line;
-
 public:
     virtual ~Root() = default;
-
-    virtual void setLine(int line);
-
-    int getLine();
 
     virtual void accept(Visitor *v) = 0;
 };
 
-class TokenNode
+class TokenNode : public Exp
 {
 private:
     int token;
@@ -27,33 +21,31 @@ private:
 public:
     TokenNode(int token, const char *lexeme);
 
-    virtual ~TokenNode() = default;
-
     void setToken(int token);
     void setSize(int token);
 
     int getToken();
     int getSize();
 
-    virtual void accept(Visitor *v);
+    virtual void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Program : public Root
 {
 private:
-    FunctionList *functions;
+    FunctionList *functionlist;
     TypeList *typelist;
     VarList *varlist;
 
 public:
-    Program(FunctionList *functions, TypeList *typelist, VarList *varlist);
-    ~Program();
+    Program(FunctionList *functionlist, TypeList *typelist, VarList *varlist);
+    ~Program() override;
 
-    inline FunctionList *FunctionList() { return functions; };
-    inline TypeList *TypeList() { return typelist; };
-    inline VarList *VarList() { return varlist; };
+    inline FunctionList *getFunctionList() { return functionlist; };
+    inline TypeList *getTypeList() { return typelist; };
+    inline VarList *getVarList() { return varlist; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class VarList : public Root //: public Program
@@ -64,12 +56,13 @@ private:
 
 public:
     VarList(NameDecl *namedecl, VarList *next);
+    VarList();
     ~VarList();
 
-    inline NameDecl *NameDecl() { return namedecl; };
+    inline NameDecl *getNameDecl() { return namedecl; };
     inline VarList *Next() { return next; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class FunctionList : public Root //: public Program
@@ -83,14 +76,15 @@ private:
 
 public:
     FunctionList(Type *type, TokenNode *id, VarList *varlist, StmtList *stmtlist, FunctionList *next);
+    FunctionList();
 
-    inline Type *Type() { return type; };
+    inline Type *getType() { return type; };
     inline TokenNode *Id() { return id; };
-    inline VarList *VarList() { return varlist; };
-    inline StmtList *StmtList() { return stmtlist; };
+    inline VarList *getVarList() { return varlist; };
+    inline StmtList *getStmtList() { return stmtlist; };
     inline FunctionList *Next() { return next; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class TypeList : public Root //: public Program
@@ -104,11 +98,11 @@ public:
     TypeList(VarList *varlist, TokenNode *id, TypeList *next);
     ~TypeList();
 
-    inline VarList *Varlist() { return varlist; };
+    inline VarList *getVarlist() { return varlist; };
     inline TokenNode *Id() { return id; };
     inline TypeList *Next() { return next; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class NameDecl : public VarList
@@ -121,28 +115,34 @@ public:
     NameDecl(Type *type, TokenNode *id);
     ~NameDecl();
 
-    inline Type *Type() { return type; };
+    inline Type *getType() { return type; };
     inline TokenNode *Id() { return id; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Type : public FunctionList
 {
 private:
     TokenNode *id;
-    Pointer *pointer;
-    TokenNode *primitive;
+    const char *lexeme;
 
 public:
-    Type(TokenNode *id, Pointer *pointer, TokenNode *primitive);
-    ~Type();
+    explicit Type(TokenNode *id) { this->id = id; }
 
-    inline TokenNode *Id() { return id; };
-    inline Pointer *Pointer() { return pointer; };
-    inline TokenNode *Primitive() { return primitive; };
+    Type(TokenNode *id, const char *lexeme) : id(id), lexeme(lexeme) {}
+    ~Type() override { delete this->id; }
 
-    virtual void accept(Visitor *v) = 0;
+    inline void setId(TokenNode *id) { this->id = id; }
+    inline void setLexeme(const char *lexeme) { this->lexeme = lexeme; }
+
+    inline TokenNode *Id() { return id; }
+    inline const char *getLexeme() const { return lexeme; }
+
+    inline int getType() { return id->getToken(); }
+    inline const char *getTypeLexeme() { return id->getTypeLexeme(); }
+
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class StmtList : public FunctionList
@@ -155,71 +155,30 @@ public:
     StmtList(Stmt *stmt, StmtList *next);
     ~StmtList();
 
-    inline Stmt *Stmt() { return stmt; };
+    inline Stmt *getStmt() { return stmt; };
     inline StmtList *Next() { return next; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Pointer : public Type
+class Pointer : public Root
 {
-private:
-    Type *type;
-
 public:
-    Pointer(Type *type);
+    Pointer();
     ~Pointer();
 
-    inline Type *Type() { return type; };
-
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); }
 };
 
 class Stmt : public Root //: public StmtList
 {
 private:
-    If *if_;
-    While *while_;
-    Switch *switch_;
-    Break *break_;
-    PrintLn *println;
-    Read *read;
-    Return *return_;
-    Throw *throw_;
-    StmtList *stmtlist;
-    Call *call;
-    Try *try_;
-    Exp *exp;
+    Root *stmt;
 
 public:
-    Stmt(If *if_,
-         While *while_,
-         Switch *switch_,
-         Break *break_,
-         PrintLn *println,
-         Read *read,
-         Return *return_,
-         Throw *throw_,
-         StmtList *stmtlist,
-         Call *call,
-         Try *try_,
-         Exp *exp);
-    ~Stmt();
+    inline Root *getStmt() { return stmt; }
 
-    inline If *If() { return if_; };
-    inline While *While() { return while_; };
-    inline Switch *Switch() { return switch_; };
-    inline Break *Break() { return break_; };
-    inline PrintLn *PrintLn() { return println; };
-    inline Read *Read() { return read; };
-    inline Return *Return() { return return_; };
-    inline Throw *Throw() { return throw_; };
-    inline StmtList *StmtList() { return stmtlist; };
-    inline Call *Call() { return call; };
-    inline Try *Try() { return try_; };
-    inline Exp *Exp() { return exp; };
-
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class If : public Root //: public Stmt
@@ -233,11 +192,11 @@ public:
     If(Exp *exp, Stmt *stmt1, Stmt *stmt2);
     ~If();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
     inline Stmt *Stmt1() { return stmt1; };
     inline Stmt *Stmt2() { return stmt2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class While : public Root //: public Stmt
@@ -249,10 +208,10 @@ public:
     While(Exp *exp, Stmt *stmt);
     ~While();
 
-    inline Exp *Exp() { return exp; };
-    inline Stmt *Stmt() { return stmt; };
+    inline Exp *getExp() { return exp; };
+    inline Stmt *getStmt() { return stmt; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Switch : public Root //: public Stmt
@@ -263,12 +222,13 @@ private:
 
 public:
     Switch(Exp *exp, CaseBlock *caseblock);
+    Switch();
     ~Switch();
 
-    inline Exp *Exp() { return exp; };
-    inline CaseBlock *CaseBlock() { return caseblock; };
+    inline Exp *getExp() { return exp; };
+    inline CaseBlock *getCaseBlock() { return caseblock; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Break : public Stmt
@@ -277,7 +237,7 @@ public:
     Break();
     ~Break();
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class PrintLn : public Stmt
@@ -289,9 +249,9 @@ public:
     PrintLn(ExpList *explist);
     ~PrintLn();
 
-    inline ExpList *ExpList() { return explist; };
+    inline ExpList *getExpList() { return explist; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Read : public Root //: public Stmt
@@ -300,12 +260,12 @@ private:
     Exp *exp;
 
 public:
-    Read(Exp *exp);
+    Read();
     ~Read();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Return : public Root //: public Stmt
@@ -317,9 +277,9 @@ public:
     Return(Exp *exp);
     ~Return();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Throw : public Stmt
@@ -328,10 +288,10 @@ public:
     Throw();
     ~Throw();
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Call : public Stmt
+class Call : public Exp
 {
 private:
     TokenNode *id;
@@ -342,9 +302,9 @@ public:
     ~Call();
 
     inline TokenNode *Id() { return id; };
-    inline ExpList *ExpList() { return explist; };
+    inline ExpList *getExpList() { return explist; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Try : public Stmt
@@ -360,75 +320,38 @@ public:
     inline Stmt *Stmt1() { return stmt1; };
     inline Stmt *Stmt2() { return stmt2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Exp : public Stmt
 {
 private:
-    TokenNode *id;
-    TokenNode *number;
-    TokenNode *literal;
-    TokenNode *char_;
-    NameExp *nameexp;
-    PointerValueExp *pointervalueexp;
-    AddressValue *addressvalue;
-    PointerValue *pointervalue;
-    Array *array;
-    Assign *assign;
-    RelationalOP *relationalop;
-    AdditionOP *additionop;
-    MultiplicationOP *multiplciationop;
-    BooleanOP *booleanop;
-    BitwiseOP *bitwiseop;
-    Not *not_;
-    Sign *sign;
-    True *true_;
-    False *false_;
+    int type;
+    int arraySize;
+    const char *lexeme;
+    const char *typeLexeme;
+    bool lValue;
+    bool pointer;
 
 public:
-    Exp(TokenNode *id,
-        TokenNode *number,
-        TokenNode *literal,
-        TokenNode *char_,
-        NameExp *nameexp,
-        PointerValueExp *pointervalueexp,
-        AddressValue *addressvalue,
-        PointerValue *pointervalue,
-        Array *array,
-        Assign *assign,
-        RelationalOP *relationalop,
-        AdditionOP *additionop,
-        MultiplicationOP *multiplciationop,
-        BooleanOP *booleanop,
-        BitwiseOP *bitwiseop,
-        Not *not_,
-        Sign *sign,
-        True *true_,
-        False *false_);
-    ~Exp();
+    Exp();
 
-    inline TokenNode *Id() { return id; };
-    inline TokenNode *Number() { return number; };
-    inline TokenNode *Literal() { return literal; };
-    inline TokenNode *Char() { return char_; };
-    inline NameExp *NameExp() { return nameexp; };
-    inline PointerValueExp *PointerValueExp() { return pointervalueexp; };
-    inline AddressValue *AddressValue() { return addressvalue; };
-    inline PointerValue *PointerValue() { return pointervalue; };
-    inline Array *Array() { return array; };
-    inline Assign *Assign() { return assign; };
-    inline RelationalOP *RelationalOP() { return relationalop; };
-    inline AdditionOP *AdditionOP() { return additionop; };
-    inline MultiplicationOP *MultiplicationOP() { return multiplciationop; };
-    inline BooleanOP *BooleanOP() { return booleanop; };
-    inline BitwiseOP *BitwiseOP() { return bitwiseop; };
-    inline Not *Not() { return not_; };
-    inline Sign *Sign() { return sign; };
-    inline True *True() { return true_; };
-    inline False *False() { return false_; };
+    inline void setType(int type) { this->type = type; }
+    inline void setArraySize(int arraySize) { this->arraySize = arraySize; }
+    inline void setTypeLexeme(const char *typeLexeme) { this->typeLexeme = typeLexeme; }
+    inline void setLexeme(const char *lexeme) { this->lexeme = lexeme; }
+    inline void setLValue(bool lValue) { this->lValue = lValue; }
+    inline void setPointer(bool pointer) { this->pointer = pointer; }
 
-    virtual void accept(Visitor *v) = 0;
+    inline int getType() const { return type; }
+    inline int getArraySize() const { return arraySize; }
+    inline const char *getTypeLexeme() const { return typeLexeme; }
+    inline const char *getLexeme() const { return lexeme; }
+
+    inline bool isLValue() const { return lValue; }
+    inline bool isPointer() const { return pointer; }
+
+    void accept(Visitor *v) override = 0;
 };
 
 class CaseBlock : public Switch
@@ -442,10 +365,10 @@ public:
     CaseBlock(TokenNode *num, StmtList *stmtlist, CaseBlock *next);
 
     inline TokenNode *Num() { return num; };
-    inline StmtList *StmtList() { return stmtlist; };
+    inline StmtList *getStmtList() { return stmtlist; };
     inline CaseBlock *Next() { return next; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class ExpList : public Root //: public PrintLn
@@ -458,10 +381,10 @@ public:
     ExpList(Exp *exp, ExpList *next);
     ~ExpList();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
     inline ExpList *Next() { return next; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class NameExp : public Exp
@@ -473,10 +396,10 @@ private:
 public:
     NameExp(Exp *exp, TokenNode *id);
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
     inline TokenNode *Id() { return id; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class PointerValueExp : public Exp
@@ -489,7 +412,7 @@ public:
     PointerValueExp(Exp *exp, TokenNode *id);
     ~PointerValueExp();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
     inline TokenNode *Id() { return id; };
 
     virtual void accept(Visitor *v);
@@ -504,9 +427,9 @@ public:
     AddressValue(Exp *exp);
     ~AddressValue();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class PointerValue : public Exp
@@ -518,9 +441,9 @@ public:
     PointerValue(Exp *exp);
     ~PointerValue();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Array : public Exp
@@ -533,10 +456,10 @@ public:
     Array(Exp *exp, ExpList *explist);
     ~Array();
 
-    inline Exp *Exp() { return exp; };
-    inline ExpList *ExpList() { return explist; };
+    inline Exp *getExp() { return exp; };
+    inline ExpList *getExpList() { return explist; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Assign : Exp
@@ -552,7 +475,7 @@ public:
     inline Exp *Exp1() { return exp1; };
     inline Exp *Exp2() { return exp2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class RelationalOP : public Exp
@@ -570,7 +493,7 @@ public:
     inline Exp *Exp1() { return exp1; };
     inline Exp *Exp2() { return exp2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class AdditionOP : public Exp
@@ -588,7 +511,7 @@ public:
     inline Exp *Exp1() { return exp1; };
     inline Exp *Exp2() { return exp2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class MultiplicationOP : public Exp
@@ -606,7 +529,7 @@ public:
     inline Exp *Exp1() { return exp1; };
     inline Exp *Exp2() { return exp2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class BooleanOP : public Exp
@@ -624,7 +547,7 @@ public:
     inline Exp *Exp1() { return exp1; };
     inline Exp *Exp2() { return exp2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class BitwiseOP : public Exp
@@ -642,7 +565,7 @@ public:
     inline Exp *Exp1() { return exp1; };
     inline Exp *Exp2() { return exp2; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Not : public Exp
@@ -654,9 +577,9 @@ public:
     Not(Exp *exp);
     ~Not();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class Sign : public Exp
@@ -668,9 +591,9 @@ public:
     Sign(Exp *exp);
     ~Sign();
 
-    inline Exp *Exp() { return exp; };
+    inline Exp *getExp() { return exp; };
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class True : public Exp
@@ -679,7 +602,7 @@ public:
     True();
     ~True();
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 class False : public Exp
@@ -688,7 +611,7 @@ public:
     False();
     ~False();
 
-    virtual void accept(Visitor *v) = 0;
+    inline void accept(Visitor *v) override { v->visit(this); };
 };
 
 #endif // ACCEPT_H
