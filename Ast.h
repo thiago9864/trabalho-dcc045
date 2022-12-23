@@ -2,7 +2,7 @@
 #define AST_H
 
 #include <iostream>
-#include "Visitor.h"
+#include "Visitor_AST.h"
 
 class Root;
 class TokenNode;
