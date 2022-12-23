@@ -3,16 +3,16 @@
 
 #include "Visitor_AST.h"
 
-class Root
+class Root_Node
 {
 private:
 public:
-    virtual ~Root() = default;
+    virtual ~Root_Node() = default;
 
     virtual void accept(Visitor *v) = 0;
 };
 
-class TokenNode : public Exp
+class TokenNode : public Exp_Node
 {
 private:
     int token;
@@ -30,108 +30,108 @@ public:
     virtual void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Program : public Root
+class Program_Node : public Root_Node
 {
 private:
-    FunctionList *functionlist;
-    TypeList *typelist;
-    VarList *varlist;
+    FunctionList_Node *functionlist;
+    TypeList_Node *typelist;
+    VarList_Node *varlist;
 
 public:
-    Program(FunctionList *functionlist, TypeList *typelist, VarList *varlist);
-    ~Program() override;
+    Program_Node(FunctionList_Node *functionlist, TypeList_Node *typelist, VarList_Node *varlist);
+    ~Program_Node() override;
 
-    inline FunctionList *getFunctionList() { return functionlist; };
-    inline TypeList *getTypeList() { return typelist; };
-    inline VarList *getVarList() { return varlist; };
+    inline FunctionList_Node *getFunctionList() { return functionlist; };
+    inline TypeList_Node *getTypeList() { return typelist; };
+    inline VarList_Node *getVarList() { return varlist; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class VarList : public Root //: public Program
+class VarList_Node : public Root_Node //: public Program_Node
 {
 private:
-    NameDecl *namedecl;
-    VarList *next;
+    NameDecl_Node *namedecl;
+    VarList_Node *next;
 
 public:
-    VarList(NameDecl *namedecl, VarList *next);
-    VarList();
-    ~VarList();
+    VarList_Node(NameDecl_Node *namedecl, VarList_Node *next);
+    VarList_Node();
+    ~VarList_Node();
 
-    inline NameDecl *getNameDecl() { return namedecl; };
-    inline VarList *Next() { return next; };
+    inline NameDecl_Node *getNameDecl() { return namedecl; };
+    inline VarList_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class FunctionList : public Root //: public Program
+class FunctionList_Node : public Root_Node //: public Program_Node
 {
 private:
-    Type *type;
+    Type_Node *type;
     TokenNode *id;
-    VarList *varlist;
-    StmtList *stmtlist;
-    FunctionList *next;
+    VarList_Node *varlist;
+    StmtList_Node *stmtlist;
+    FunctionList_Node *next;
 
 public:
-    FunctionList(Type *type, TokenNode *id, VarList *varlist, StmtList *stmtlist, FunctionList *next);
-    FunctionList();
+    FunctionList_Node(Type_Node *type, TokenNode *id, VarList_Node *varlist, StmtList_Node *stmtlist, FunctionList_Node *next);
+    FunctionList_Node();
 
-    inline Type *getType() { return type; };
+    inline Type_Node *getType() { return type; };
     inline TokenNode *Id() { return id; };
-    inline VarList *getVarList() { return varlist; };
-    inline StmtList *getStmtList() { return stmtlist; };
-    inline FunctionList *Next() { return next; };
+    inline VarList_Node *getVarList() { return varlist; };
+    inline StmtList_Node *getStmtList() { return stmtlist; };
+    inline FunctionList_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class TypeList : public Root //: public Program
+class TypeList_Node : public Root_Node //: public Program_Node
 {
 private:
-    VarList *varlist;
+    VarList_Node *varlist;
     TokenNode *id;
-    TypeList *next;
+    TypeList_Node *next;
 
 public:
-    TypeList(VarList *varlist, TokenNode *id, TypeList *next);
-    ~TypeList();
+    TypeList_Node(VarList_Node *varlist, TokenNode *id, TypeList_Node *next);
+    ~TypeList_Node();
 
-    inline VarList *getVarlist() { return varlist; };
+    inline VarList_Node *getVarlist() { return varlist; };
     inline TokenNode *Id() { return id; };
-    inline TypeList *Next() { return next; };
+    inline TypeList_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class NameDecl : public VarList
+class NameDecl_Node : public VarList_Node
 {
 private:
-    Type *type;
+    Type_Node *type;
     TokenNode *id;
 
 public:
-    NameDecl(Type *type, TokenNode *id);
-    ~NameDecl();
+    NameDecl_Node(Type_Node *type, TokenNode *id);
+    ~NameDecl_Node();
 
-    inline Type *getType() { return type; };
+    inline Type_Node *getType() { return type; };
     inline TokenNode *Id() { return id; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Type : public FunctionList
+class Type_Node : public FunctionList_Node
 {
 private:
     TokenNode *id;
     const char *lexeme;
 
 public:
-    explicit Type(TokenNode *id) { this->id = id; }
+    explicit Type_Node(TokenNode *id) { this->id = id; }
 
-    Type(TokenNode *id, const char *lexeme) : id(id), lexeme(lexeme) {}
-    ~Type() override { delete this->id; }
+    Type_Node(TokenNode *id, const char *lexeme) : id(id), lexeme(lexeme) {}
+    ~Type_Node() override { delete this->id; }
 
     inline void setId(TokenNode *id) { this->id = id; }
     inline void setLexeme(const char *lexeme) { this->lexeme = lexeme; }
@@ -145,185 +145,185 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class StmtList : public FunctionList
+class StmtList_Node : public FunctionList_Node
 {
 private:
-    Stmt *stmt;
-    StmtList *next;
+    Stmt_Node *stmt;
+    StmtList_Node *next;
 
 public:
-    StmtList(Stmt *stmt, StmtList *next);
-    ~StmtList();
+    StmtList_Node(Stmt_Node *stmt, StmtList_Node *next);
+    ~StmtList_Node();
 
-    inline Stmt *getStmt() { return stmt; };
-    inline StmtList *Next() { return next; };
+    inline Stmt_Node *getStmt() { return stmt; };
+    inline StmtList_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Pointer : public Root
+class Pointer_Node : public Root_Node
 {
 public:
-    Pointer();
-    ~Pointer();
+    Pointer_Node();
+    ~Pointer_Node();
 
     inline void accept(Visitor *v) override { v->visit(this); }
 };
 
-class Stmt : public Root //: public StmtList
+class Stmt_Node : public Root_Node //: public StmtList_Node
 {
 private:
-    Root *stmt;
+    Root_Node *stmt;
 
 public:
-    inline Root *getStmt() { return stmt; }
+    inline Root_Node *getStmt() { return stmt; }
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class If : public Root //: public Stmt
+class If_Node : public Root_Node //: public Stmt_Node
 {
 private:
-    Exp *exp;
-    Stmt *stmt1;
-    Stmt *stmt2;
+    Exp_Node *exp;
+    Stmt_Node *stmt1;
+    Stmt_Node *stmt2;
 
 public:
-    If(Exp *exp, Stmt *stmt1, Stmt *stmt2);
-    ~If();
+    If_Node(Exp_Node *exp, Stmt_Node *stmt1, Stmt_Node *stmt2);
+    ~If_Node();
 
-    inline Exp *getExp() { return exp; };
-    inline Stmt *Stmt1() { return stmt1; };
-    inline Stmt *Stmt2() { return stmt2; };
+    inline Exp_Node *getExp() { return exp; };
+    inline Stmt_Node *Stmt1() { return stmt1; };
+    inline Stmt_Node *Stmt2() { return stmt2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class While : public Root //: public Stmt
+class While_Node : public Root_Node //: public Stmt_Node
 {
-    Exp *exp;
-    Stmt *stmt;
+    Exp_Node *exp;
+    Stmt_Node *stmt;
 
 public:
-    While(Exp *exp, Stmt *stmt);
-    ~While();
+    While_Node(Exp_Node *exp, Stmt_Node *stmt);
+    ~While_Node();
 
-    inline Exp *getExp() { return exp; };
-    inline Stmt *getStmt() { return stmt; };
+    inline Exp_Node *getExp() { return exp; };
+    inline Stmt_Node *getStmt() { return stmt; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Switch : public Root //: public Stmt
-{
-private:
-    Exp *exp;
-    CaseBlock *caseblock;
-
-public:
-    Switch(Exp *exp, CaseBlock *caseblock);
-    Switch();
-    ~Switch();
-
-    inline Exp *getExp() { return exp; };
-    inline CaseBlock *getCaseBlock() { return caseblock; };
-
-    inline void accept(Visitor *v) override { v->visit(this); };
-};
-
-class Break : public Stmt
-{
-public:
-    Break();
-    ~Break();
-
-    inline void accept(Visitor *v) override { v->visit(this); };
-};
-
-class PrintLn : public Stmt
+class Switch_Node : public Root_Node //: public Stmt_Node
 {
 private:
-    ExpList *explist;
+    Exp_Node *exp;
+    CaseBlock_Node *caseblock;
 
 public:
-    PrintLn(ExpList *explist);
-    ~PrintLn();
+    Switch_Node(Exp_Node *exp, CaseBlock_Node *caseblock);
+    Switch_Node();
+    ~Switch_Node();
 
-    inline ExpList *getExpList() { return explist; };
+    inline Exp_Node *getExp() { return exp; };
+    inline CaseBlock_Node *getCaseBlock() { return caseblock; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Read : public Root //: public Stmt
+class Break_Node : public Stmt_Node
+{
+public:
+    Break_Node();
+    ~Break_Node();
+
+    inline void accept(Visitor *v) override { v->visit(this); };
+};
+
+class PrintLn_Node : public Stmt_Node
 {
 private:
-    Exp *exp;
+    ExpList_Node *explist;
 
 public:
-    Read();
-    ~Read();
+    PrintLn_Node(ExpList_Node *explist);
+    ~PrintLn_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline ExpList_Node *getExpList() { return explist; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Return : public Root //: public Stmt
+class Read_Node : public Root_Node //: public Stmt_Node
 {
 private:
-    Exp *exp;
+    Exp_Node *exp;
 
 public:
-    Return(Exp *exp);
-    ~Return();
+    Read_Node();
+    ~Read_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline Exp_Node *getExp() { return exp; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Throw : public Stmt
+class Return_Node : public Root_Node //: public Stmt_Node
+{
+private:
+    Exp_Node *exp;
+
+public:
+    Return_Node(Exp_Node *exp);
+    ~Return_Node();
+
+    inline Exp_Node *getExp() { return exp; };
+
+    inline void accept(Visitor *v) override { v->visit(this); };
+};
+
+class Throw_Node : public Stmt_Node
 {
 public:
-    Throw();
-    ~Throw();
+    Throw_Node();
+    ~Throw_Node();
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Call : public Exp
+class Call_Node : public Exp_Node
 {
 private:
     TokenNode *id;
-    ExpList *explist;
+    ExpList_Node *explist;
 
 public:
-    Call(TokenNode *id, ExpList *explist);
-    ~Call();
+    Call_Node(TokenNode *id, ExpList_Node *explist);
+    ~Call_Node();
 
     inline TokenNode *Id() { return id; };
-    inline ExpList *getExpList() { return explist; };
+    inline ExpList_Node *getExpList() { return explist; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Try : public Stmt
+class Try_Node : public Stmt_Node
 {
 private:
-    Stmt *stmt1;
-    Stmt *stmt2;
+    Stmt_Node *stmt1;
+    Stmt_Node *stmt2;
 
 public:
-    Try(Stmt *stmt1, Stmt *stmt2);
-    ~Try();
+    Try_Node(Stmt_Node *stmt1, Stmt_Node *stmt2);
+    ~Try_Node();
 
-    inline Stmt *Stmt1() { return stmt1; };
-    inline Stmt *Stmt2() { return stmt2; };
+    inline Stmt_Node *Stmt1() { return stmt1; };
+    inline Stmt_Node *Stmt2() { return stmt2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Exp : public Stmt
+class Exp_Node : public Stmt_Node
 {
 private:
     int type;
@@ -334,7 +334,7 @@ private:
     bool pointer;
 
 public:
-    Exp();
+    Exp_Node();
 
     inline void setType(int type) { this->type = type; }
     inline void setArraySize(int arraySize) { this->arraySize = arraySize; }
@@ -354,262 +354,262 @@ public:
     void accept(Visitor *v) override = 0;
 };
 
-class CaseBlock : public Switch
+class CaseBlock_Node : public Switch_Node
 {
 private:
     TokenNode *num;
-    StmtList *stmtlist;
-    CaseBlock *next;
+    StmtList_Node *stmtlist;
+    CaseBlock_Node *next;
 
 public:
-    CaseBlock(TokenNode *num, StmtList *stmtlist, CaseBlock *next);
+    CaseBlock_Node(TokenNode *num, StmtList_Node *stmtlist, CaseBlock_Node *next);
 
     inline TokenNode *Num() { return num; };
-    inline StmtList *getStmtList() { return stmtlist; };
-    inline CaseBlock *Next() { return next; };
+    inline StmtList_Node *getStmtList() { return stmtlist; };
+    inline CaseBlock_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class ExpList : public Root //: public PrintLn
+class ExpList_Node : public Root_Node //: public PrintLn
 {
 private:
-    Exp *exp;
-    ExpList *next;
+    Exp_Node *exp;
+    ExpList_Node *next;
 
 public:
-    ExpList(Exp *exp, ExpList *next);
-    ~ExpList();
+    ExpList_Node(Exp_Node *exp, ExpList_Node *next);
+    ~ExpList_Node();
 
-    inline Exp *getExp() { return exp; };
-    inline ExpList *Next() { return next; };
+    inline Exp_Node *getExp() { return exp; };
+    inline ExpList_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class NameExp : public Exp
+class NameExp_Node : public Exp_Node
 {
 private:
-    Exp *exp;
+    Exp_Node *exp;
     TokenNode *id;
 
 public:
-    NameExp(Exp *exp, TokenNode *id);
+    NameExp_Node(Exp_Node *exp, TokenNode *id);
 
-    inline Exp *getExp() { return exp; };
+    inline Exp_Node *getExp() { return exp; };
     inline TokenNode *Id() { return id; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class PointerValueExp : public Exp
+class PointerValueExp_Node : public Exp_Node
 {
 private:
-    Exp *exp;
+    Exp_Node *exp;
     TokenNode *id;
 
 public:
-    PointerValueExp(Exp *exp, TokenNode *id);
-    ~PointerValueExp();
+    PointerValueExp_Node(Exp_Node *exp, TokenNode *id);
+    ~PointerValueExp_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline Exp_Node *getExp() { return exp; };
     inline TokenNode *Id() { return id; };
 
     virtual void accept(Visitor *v);
 };
 
-class AddressValue : public Exp
+class AddressValue_Node : public Exp_Node
 {
 private:
-    Exp *exp;
+    Exp_Node *exp;
 
 public:
-    AddressValue(Exp *exp);
-    ~AddressValue();
+    AddressValue_Node(Exp_Node *exp);
+    ~AddressValue_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline Exp_Node *getExp() { return exp; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class PointerValue : public Exp
+class PointerValue_Node : public Exp_Node
 {
 private:
-    Exp *exp;
+    Exp_Node *exp;
 
 public:
-    PointerValue(Exp *exp);
-    ~PointerValue();
+    PointerValue_Node(Exp_Node *exp);
+    ~PointerValue_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline Exp_Node *getExp() { return exp; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Array : public Exp
+class Array_Node : public Exp_Node
 {
 private:
-    Exp *exp;
-    ExpList *explist;
+    Exp_Node *exp;
+    ExpList_Node *explist;
 
 public:
-    Array(Exp *exp, ExpList *explist);
-    ~Array();
+    Array_Node(Exp_Node *exp, ExpList_Node *explist);
+    ~Array_Node();
 
-    inline Exp *getExp() { return exp; };
-    inline ExpList *getExpList() { return explist; };
+    inline Exp_Node *getExp() { return exp; };
+    inline ExpList_Node *getExpList() { return explist; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Assign : Exp
+class Assign_Node : Exp_Node
 {
 private:
-    Exp *exp1;
-    Exp *exp2;
+    Exp_Node *exp1;
+    Exp_Node *exp2;
 
 public:
-    Assign(Exp *exp1, Exp *exp2);
-    ~Assign();
+    Assign_Node(Exp_Node *exp1, Exp_Node *exp2);
+    ~Assign_Node();
 
-    inline Exp *Exp1() { return exp1; };
-    inline Exp *Exp2() { return exp2; };
+    inline Exp_Node *Exp1() { return exp1; };
+    inline Exp_Node *Exp2() { return exp2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class RelationalOP : public Exp
-{
-private:
-    TokenNode *op;
-    Exp *exp1;
-    Exp *exp2;
-
-public:
-    RelationalOP(Exp *exp1, Exp *exp2);
-    ~RelationalOP();
-
-    inline TokenNode *Op() { return op; };
-    inline Exp *Exp1() { return exp1; };
-    inline Exp *Exp2() { return exp2; };
-
-    inline void accept(Visitor *v) override { v->visit(this); };
-};
-
-class AdditionOP : public Exp
+class RelationalOP_Node : public Exp_Node
 {
 private:
     TokenNode *op;
-    Exp *exp1;
-    Exp *exp2;
+    Exp_Node *exp1;
+    Exp_Node *exp2;
 
 public:
-    AdditionOP(Exp *exp1, Exp *exp2);
-    ~AdditionOP();
+    RelationalOP_Node(Exp_Node *exp1, Exp_Node *exp2);
+    ~RelationalOP_Node();
 
     inline TokenNode *Op() { return op; };
-    inline Exp *Exp1() { return exp1; };
-    inline Exp *Exp2() { return exp2; };
+    inline Exp_Node *Exp1() { return exp1; };
+    inline Exp_Node *Exp2() { return exp2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class MultiplicationOP : public Exp
+class AdditionOP_Node : public Exp_Node
 {
 private:
     TokenNode *op;
-    Exp *exp1;
-    Exp *exp2;
+    Exp_Node *exp1;
+    Exp_Node *exp2;
 
 public:
-    MultiplicationOP(Exp *exp1, Exp *exp2);
-    ~MultiplicationOP();
+    AdditionOP_Node(Exp_Node *exp1, Exp_Node *exp2);
+    ~AdditionOP_Node();
 
     inline TokenNode *Op() { return op; };
-    inline Exp *Exp1() { return exp1; };
-    inline Exp *Exp2() { return exp2; };
+    inline Exp_Node *Exp1() { return exp1; };
+    inline Exp_Node *Exp2() { return exp2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class BooleanOP : public Exp
+class MultiplicationOP_Node : public Exp_Node
 {
 private:
     TokenNode *op;
-    Exp *exp1;
-    Exp *exp2;
+    Exp_Node *exp1;
+    Exp_Node *exp2;
 
 public:
-    BooleanOP(Exp *exp1, Exp *exp2);
-    ~BooleanOP();
+    MultiplicationOP_Node(Exp_Node *exp1, Exp_Node *exp2);
+    ~MultiplicationOP_Node();
 
     inline TokenNode *Op() { return op; };
-    inline Exp *Exp1() { return exp1; };
-    inline Exp *Exp2() { return exp2; };
+    inline Exp_Node *Exp1() { return exp1; };
+    inline Exp_Node *Exp2() { return exp2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class BitwiseOP : public Exp
+class BooleanOP_Node : public Exp_Node
 {
 private:
     TokenNode *op;
-    Exp *exp1;
-    Exp *exp2;
+    Exp_Node *exp1;
+    Exp_Node *exp2;
 
 public:
-    BitwiseOP(Exp *exp1, Exp *exp2);
-    ~BitwiseOP();
+    BooleanOP_Node(Exp_Node *exp1, Exp_Node *exp2);
+    ~BooleanOP_Node();
 
     inline TokenNode *Op() { return op; };
-    inline Exp *Exp1() { return exp1; };
-    inline Exp *Exp2() { return exp2; };
+    inline Exp_Node *Exp1() { return exp1; };
+    inline Exp_Node *Exp2() { return exp2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Not : public Exp
+class BitwiseOP_Node : public Exp_Node
 {
 private:
-    Exp *exp;
+    TokenNode *op;
+    Exp_Node *exp1;
+    Exp_Node *exp2;
 
 public:
-    Not(Exp *exp);
-    ~Not();
+    BitwiseOP_Node(Exp_Node *exp1, Exp_Node *exp2);
+    ~BitwiseOP_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline TokenNode *Op() { return op; };
+    inline Exp_Node *Exp1() { return exp1; };
+    inline Exp_Node *Exp2() { return exp2; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Sign : public Exp
+class Not_Node : public Exp_Node
 {
 private:
-    Exp *exp;
+    Exp_Node *exp;
 
 public:
-    Sign(Exp *exp);
-    ~Sign();
+    Not_Node(Exp_Node *exp);
+    ~Not_Node();
 
-    inline Exp *getExp() { return exp; };
+    inline Exp_Node *getExp() { return exp; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class True : public Exp
+class Sign_Node : public Exp_Node
 {
+private:
+    Exp_Node *exp;
+
 public:
-    True();
-    ~True();
+    Sign_Node(Exp_Node *exp);
+    ~Sign_Node();
+
+    inline Exp_Node *getExp() { return exp; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class False : public Exp
+class True_Node : public Exp_Node
 {
 public:
-    False();
-    ~False();
+    True_Node();
+    ~True_Node();
+
+    inline void accept(Visitor *v) override { v->visit(this); };
+};
+
+class False_Node : public Exp_Node
+{
+public:
+    False_Node();
+    ~False_Node();
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };

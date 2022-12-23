@@ -10,16 +10,22 @@ void RDParser::startParser()
 {
     nextToken();
     Program();
+
+    program = Program_AST(nullptr, nullptr, nullptr);
+    visitor = new Print_AST();
+    program->accept(visitor);
+    delete (visitor);
 }
 
 void RDParser::nextToken()
 {
     // Aqui obtem o nextToken do analisador léxico
     lookAhead = getNextToken();
-    //printf("lookAhead: %d \n", lookAhead);
+    // printf("lookAhead: %d \n", lookAhead);
     char *tokenName = getTokenName(lookAhead);
-    if(tokenName){
-       printf("[DEBUG] Token de lookAhead: %s\n", tokenName);
+    if (tokenName)
+    {
+        printf("[DEBUG] Token de lookAhead: %s\n", tokenName);
     }
 }
 
@@ -54,13 +60,15 @@ void RDParser::writeError(int expectedToken)
 {
     char *tokenName = getTokenName(expectedToken);
     int templateLen = 0;
-    for (; errorTemplate[templateLen] != '\0'; templateLen++);
+    for (; errorTemplate[templateLen] != '\0'; templateLen++)
+        ;
     char *errStr = new char[templateLen + strlen(tokenName)];
     errStr[0] = '\0';
     strcat(errStr, errorTemplate);
-    //strcat(errStr, tokenName);
-    for(int i=0; tokenName[i] != '\0';i++){
-        errStr[i+templateLen] = tokenName[i];
+    // strcat(errStr, tokenName);
+    for (int i = 0; tokenName[i] != '\0'; i++)
+    {
+        errStr[i + templateLen] = tokenName[i];
     }
 
     writeSyntaxError(errStr, getSourceCodeLine(), getSourceCodeColumn());
@@ -77,7 +85,9 @@ void RDParser::syncError(const int *syncArr)
             if (lookAhead != syncArr[i])
             {
                 i++;
-            } else {
+            }
+            else
+            {
                 return;
             }
         }
@@ -1030,7 +1040,7 @@ void RDParser::Stmt()
         // Stmt ::= return Expr ;
         match(RETURN);
         Expr();
-       // matchOrSkip(SEMICOLON, sync_Stmt);
+        // matchOrSkip(SEMICOLON, sync_Stmt);
         break;
     case THROW:
         // Stmt ::= throw ;
@@ -1135,7 +1145,7 @@ void RDParser::Stmt2()
         // Stmt2 ::= return Expr ;
         match(RETURN);
         Expr();
-        //matchOrSkip(SEMICOLON, sync_Stmt2);
+        // matchOrSkip(SEMICOLON, sync_Stmt2);
         break;
     case THROW:
         // Stmt2 ::= throw ;

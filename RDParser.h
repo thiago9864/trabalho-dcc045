@@ -7,6 +7,7 @@
 #include <string>
 #include "LexicalAnalyzer.h"
 #include "ErrorManager.h"
+#include "Accept_AST.h"
 
 class RDParser
 {
@@ -23,6 +24,7 @@ private:
     // Functions of nonterminals
     static int sync_Program[];
     void Program();
+    Program_Node *Program_AST(FunctionList_Node *functionlist, TypeList_Node *typelist, VarList_Node *varlist);
 
     static int sync_Type[];
     void Type();
@@ -181,6 +183,9 @@ private:
     void PrimaryL();
 
 public:
+    Program_Node *program;
+    Print_AST *visitor;
+
     RDParser();
     ~RDParser();
 
