@@ -380,3 +380,398 @@ void Print_AST::visit(Sign_Node *node)
     if (node->getExp() != nullptr)
         node->getExp()->accept(this);
 }
+
+TokenNode::TokenNode(int token, const char *lexeme)
+{
+    this->token = token;
+    this->size = 0;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(lexeme);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+
+Program_Node::Program_Node(FunctionList_Node *functionlist, TypeList_Node *typelist, VarList_Node *varlist)
+{
+    this->functionlist = functionlist;
+    this->typelist = typelist;
+    this->varlist = varlist;
+}
+Program_Node::~Program_Node()
+{
+    delete this->varlist;
+    delete this->typelist;
+    delete this->functionlist;
+}
+
+VarList_Node::VarList_Node(NameDecl_Node *namedecl, VarList_Node *next)
+{
+    this->namedecl = namedecl;
+    this->next = next;
+}
+VarList_Node::~VarList_Node()
+{
+    delete this->namedecl;
+    delete this->next;
+}
+
+FunctionList_Node::FunctionList_Node(Type_Node *type, TokenNode *id, VarList_Node *varlist, StmtList_Node *stmtlist, FunctionList_Node *next)
+{
+    this->type = type;
+    this->id = id;
+    this->varlist = varlist;
+    this->stmtlist = stmtlist;
+    this->next = next;
+}
+FunctionList_Node::~FunctionList_Node()
+{
+    delete this->type;
+    delete this->id;
+    delete this->varlist;
+    delete this->stmtlist;
+    delete this->next;
+}
+
+TypeList_Node::TypeList_Node(VarList_Node *varlist, TokenNode *id, TypeList_Node *next)
+{
+    this->varlist = varlist;
+    this->id = id;
+    this->next = next;
+}
+TypeList_Node::~TypeList_Node()
+{
+    delete this->varlist;
+    delete this->id;
+    delete this->next;
+}
+
+NameDecl_Node::NameDecl_Node(Type_Node *type, TokenNode *id)
+{
+    this->type = type;
+    this->id = id;
+}
+NameDecl_Node::~NameDecl_Node()
+{
+    delete this->type;
+    delete this->id;
+}
+
+StmtList_Node::StmtList_Node(Stmt_Node *stmt1, StmtList_Node *next1)
+{
+    this->stmt = stmt;
+    this->next = next;
+}
+StmtList_Node::~StmtList_Node()
+{
+    delete this->next;
+    delete this->stmt;
+}
+
+If_Node::If_Node(Exp_Node *exp, Stmt_Node *stmt1, Stmt_Node *stmt2)
+{
+    this->exp = exp;
+    this->stmt1 = stmt1;
+    this->stmt2 = stmt2;
+}
+If_Node::~If_Node()
+{
+    delete this->exp;
+    delete this->stmt1;
+    delete this->stmt2;
+}
+
+While_Node::While_Node(Exp_Node *exp, Stmt_Node *stmt)
+{
+    this->exp = exp;
+    this->stmt = stmt;
+}
+While_Node::~While_Node()
+{
+    delete this->exp;
+    delete this->stmt;
+}
+
+Switch_Node::Switch_Node(Exp_Node *exp, CaseBlock_Node *caseblock)
+{
+    this->exp = exp;
+    this->caseblock = caseblock;
+}
+Switch_Node::~Switch_Node()
+{
+    delete this->exp;
+    delete this->caseblock;
+}
+
+CaseBlock_Node::CaseBlock_Node(TokenNode *num, StmtList_Node *stmtlist, CaseBlock_Node *next)
+{
+    this->num = num;
+    this->stmtlist = stmtlist;
+    this->next = next;
+}
+CaseBlock_Node::~CaseBlock_Node()
+{
+    delete this->num;
+    delete this->stmtlist;
+    delete this->next;
+}
+
+ExpList_Node::ExpList_Node(Exp_Node *exp, ExpList_Node *next)
+{
+    this->exp = exp;
+    this->next = next;
+}
+ExpList_Node::~ExpList_Node()
+{
+    delete this->exp;
+    delete this->next;
+}
+
+Try_Node::Try_Node(Stmt_Node *stmt1, Stmt_Node *stmt2)
+{
+    this->stmt1 = stmt1;
+    this->stmt2 = stmt2;
+}
+Try_Node::~Try_Node()
+{
+    delete this->stmt1;
+    delete this->stmt2;
+}
+
+Assign_Node::Assign_Node(Exp_Node *exp1, Exp_Node *exp2)
+{
+    this->exp1 = exp1;
+    this->exp2 = exp2;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+Assign_Node::~Assign_Node()
+{
+    delete this->exp1;
+    delete this->exp2;
+}
+
+NameExp_Node::NameExp_Node(Exp_Node *exp, TokenNode *id)
+{
+    this->exp = exp;
+    this->id = id;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+NameExp_Node::~NameExp_Node()
+{
+    delete this->exp;
+    delete this->id;
+}
+
+PointerValueExp_Node::PointerValueExp_Node(Exp_Node *exp, TokenNode *id)
+{
+    this->exp = exp;
+    this->id = id;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+PointerValueExp_Node::~PointerValueExp_Node()
+{
+    delete this->id;
+    delete this->exp;
+}
+
+AddressValue_Node::AddressValue_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+
+PointerValue_Node::PointerValue_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+
+Array_Node::Array_Node(Exp_Node *exp, ExpList_Node *explist)
+{
+    this->exp = exp;
+    this->explist = explist;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+Array_Node::~Array_Node()
+{
+    delete this->exp;
+    delete this->explist;
+}
+
+Call_Node::Call_Node(TokenNode *id, ExpList_Node *explist)
+{
+    this->id = id;
+    this->explist = explist;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+Call_Node::~Call_Node()
+{
+    delete this->id;
+    delete this->explist;
+}
+
+RelationalOP_Node::RelationalOP_Node(Exp_Node *exp1, Exp_Node *exp2)
+{
+    this->op = op;
+    this->exp1 = exp1;
+    this->exp2 = exp2;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+RelationalOP_Node::~RelationalOP_Node()
+{
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
+}
+
+AdditionOP_Node::AdditionOP_Node(Exp_Node *exp1, Exp_Node *exp2)
+{
+    this->op = op;
+    this->exp1 = exp1;
+    this->exp2 = exp2;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+AdditionOP_Node::~AdditionOP_Node()
+{
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
+}
+
+MultiplicationOP_Node::MultiplicationOP_Node(Exp_Node *exp1, Exp_Node *exp2)
+{
+    this->op = op;
+    this->exp1 = exp1;
+    this->exp2 = exp2;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+MultiplicationOP_Node::~MultiplicationOP_Node()
+{
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
+}
+
+BooleanOP_Node::BooleanOP_Node(Exp_Node *exp1, Exp_Node *exp2)
+{
+    this->op = op;
+    this->exp1 = exp1;
+    this->exp2 = exp2;
+
+    this->setLValue(false);
+    this->setPointer(false);
+    this->setTypeLexeme(NULL);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+}
+BooleanOP_Node::~BooleanOP_Node()
+{
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
+}
+
+BitwiseOP_Node::BitwiseOP_Node(Exp_Node *exp1, Exp_Node *exp2)
+{
+    this->op = op;
+    this->exp1 = exp1;
+    this->exp2 = exp2;
+
+    this->setLValue(false);
+    this->setPointer(false);
+    this->setTypeLexeme(NULL);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+}
+BitwiseOP_Node::~BitwiseOP_Node()
+{
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
+}
+
+Sign_Node::Sign_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
+
+Not_Node::Not_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+
+    this->setType(-42);
+    this->setArraySize(-42);
+    this->setLexeme(NULL);
+    this->setTypeLexeme(NULL);
+    this->setLValue(false);
+    this->setPointer(false);
+}
