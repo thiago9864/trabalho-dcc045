@@ -7,6 +7,7 @@
 #include <string>
 #include "LexicalAnalyzer.h"
 #include "ErrorManager.h"
+#include "Visitor_AST.h"
 
 class RDParser
 {
