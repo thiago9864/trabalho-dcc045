@@ -10,11 +10,6 @@ void RDParser::startParser()
 {
     nextToken();
     Program();
-
-    program = Program_AST(nullptr, nullptr, nullptr);
-    visitor = new Print_AST();
-    program->accept(visitor);
-    delete (visitor);
 }
 
 void RDParser::nextToken()
