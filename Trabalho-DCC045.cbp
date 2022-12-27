@@ -21,6 +21,7 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="test/ArquivoEntrada2.cmm" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>

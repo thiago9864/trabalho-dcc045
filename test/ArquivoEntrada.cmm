@@ -14,5 +14,14 @@ int main (int *id, int id)
         }            
     }
 
+    switch (k){
+        case 0:
+            print("zero");
+            break;
+        case 1:
+            print("um");
+            break;
+    }
+
     return 0;
 }
