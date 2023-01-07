@@ -7,6 +7,7 @@
 #include <string>
 #include "LexicalAnalyzer.h"
 #include "ErrorManager.h"
+#include "VisitorAST.h"
 
 class RDParser
 {
@@ -22,46 +23,46 @@ private:
 
     // Functions of nonterminals
     static int sync_Program[];
-    void Program();
+    Program_Node *Program(Program_Node *root);
 
     static int sync_TypeDecl[];
-    void TypeDecl();
+    TypeList_Node *TypeDecl(TypeList_Node *typeDecl);
 
     static int sync_FatoraPg[];
     void FatoraPg();
 
     static int sync_IdList[];
-    void IdList();
+    VarList_Node *IdList(VarList_Node *idList);
 
     static int sync_Pointer[];
-    void Pointer();
+    Pointer_Node *Pointer(Pointer_Node *pointer);
 
     static int sync_Type[];
-    void Type();
+    Type_Node *Type(Type_Node *type);
 
     static int sync_TypePure[];
     void TypePure();
 
     static int sync_Array[];
-    void Array();
+    Array_Node *Array(Array_Node *array);
 
     static int sync_VarDecl[];
-    void VarDecl();
+    NameDecl_Node *VarDecl(NameDecl_Node *varDecl);
 
     static int sync_Params[];
     void Params();
 
     static int sync_FunctionDecl[];
-    void FunctionDecl();
+    FunctionList_Node *FunctionDecl(FunctionList_Node *functionDecl);
 
     static int sync_StmtList[];
-    void StmtList();
+    StmtList_Node *StmtList(StmtList_Node *stmtList);
 
     static int sync_StmtListK[];
     void StmtListK();
 
     static int sync_CaseBlock[];
-    void CaseBlock();
+    CaseBlock_Node *CaseBlock(CaseBlock_Node *caseBlock);
 
     static int sync_CaseBlockL[];
     void CaseBlockL();
@@ -70,22 +71,22 @@ private:
     void CaseBlockF();
 
     static int sync_Stmt[];
-    void Stmt();
+    Stmt_Node *Stmt(Stmt_Node *stmt);
 
     static int sync_FatoraStmt[];
     void FatoraStmt();
 
     static int sync_IfOpt[];
-    void IfOpt();
+    If_Node *IfOpt(If_Node *ifOpt);
 
     static int sync_ElseOpt[];
-    void ElseOpt();
+    If_Node *ElseOpt(If_Node *elseOpt);
 
     static int sync_ArrayAcesso[];
     void ArrayAcesso();
 
     static int sync_ExprList[];
-    void ExprList();
+    ExpList_Node *ExprList(ExpList_Node *exprList);
 
     static int sync_ExprListTail[];
     void ExprListTail();
@@ -136,12 +137,16 @@ private:
     void Expr7();
 
     static int sync_Primary[];
-    void Primary();
+    Exp_Node *Primary(Exp_Node *primary);
 
     static int sync_PrimaryFatora[];
     void PrimaryFatora();
 
 public:
+    Program_Node *root;
+    Program_Node *program;
+    Print_AST *visitor;
+
     RDParser();
     ~RDParser();
 
