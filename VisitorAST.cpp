@@ -70,6 +70,7 @@ void Print_AST::visit(VarList_Node *node)
         node->Next()->accept(this);
     if (node->getNameDecl() != nullptr)
         node->getNameDecl()->accept(this);
+
     down_height();
 }
 
@@ -91,7 +92,10 @@ void Print_AST::visit(FunctionList_Node *node)
     up_height();
 
     if (node->getType() != nullptr)
+    {
+        std::cout << (node->getType()->getLexeme()) << std::endl;
         node->getType()->accept(this);
+    }
     if (node->Id() != nullptr)
         node->Id()->accept(this);
     if (node->getVarList() != nullptr)
@@ -478,7 +482,7 @@ Token_Node::Token_Node(int token, const char *lexeme)
     this->setType(0);
     this->setArraySize(0);
     this->setLexeme(lexeme);
-    this->setTypeLexeme(NULL);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
@@ -491,9 +495,9 @@ Program_Node::Program_Node(FunctionList_Node *functionlist, TypeList_Node *typel
 }
 Program_Node::~Program_Node()
 {
-    // delete this->varlist;
-    // delete this->typelist;
-    // delete this->functionlist;
+    delete this->varlist;
+    delete this->typelist;
+    delete this->functionlist;
 }
 
 VarList_Node::VarList_Node(NameDecl_Node *namedecl, VarList_Node *next)
@@ -503,13 +507,13 @@ VarList_Node::VarList_Node(NameDecl_Node *namedecl, VarList_Node *next)
 }
 VarList_Node::VarList_Node()
 {
-    namedecl = NULL;
-    next = NULL;
+    namedecl = nullptr;
+    next = nullptr;
 };
 VarList_Node::~VarList_Node()
 {
-    // delete this->namedecl;
-    // delete this->next;
+    delete this->namedecl;
+    delete this->next;
 }
 
 FunctionList_Node::FunctionList_Node(Type_Node *type, Token_Node *id, VarList_Node *varlist, StmtList_Node *stmtlist, FunctionList_Node *next)
@@ -522,11 +526,11 @@ FunctionList_Node::FunctionList_Node(Type_Node *type, Token_Node *id, VarList_No
 }
 FunctionList_Node::~FunctionList_Node()
 {
-    // delete this->type;
-    // delete this->id;
-    // delete this->varlist;
-    // delete this->stmtlist;
-    // delete this->next;
+    delete this->type;
+    delete this->id;
+    delete this->varlist;
+    delete this->stmtlist;
+    delete this->next;
 }
 
 TypeList_Node::TypeList_Node(VarList_Node *varlist, Token_Node *id, TypeList_Node *next)
@@ -537,9 +541,9 @@ TypeList_Node::TypeList_Node(VarList_Node *varlist, Token_Node *id, TypeList_Nod
 }
 TypeList_Node::~TypeList_Node()
 {
-    // delete this->varlist;
-    // delete this->id;
-    // delete this->next;
+    delete this->varlist;
+    delete this->id;
+    delete this->next;
 }
 
 NameDecl_Node::NameDecl_Node(Type_Node *type, Token_Node *id)
@@ -549,8 +553,8 @@ NameDecl_Node::NameDecl_Node(Type_Node *type, Token_Node *id)
 }
 NameDecl_Node::~NameDecl_Node()
 {
-    // delete this->type;
-    // delete this->id;
+    delete this->type;
+    delete this->id;
 }
 
 StmtList_Node::StmtList_Node(Stmt_Node *stmt, StmtList_Node *next)
@@ -560,8 +564,8 @@ StmtList_Node::StmtList_Node(Stmt_Node *stmt, StmtList_Node *next)
 }
 StmtList_Node::~StmtList_Node()
 {
-    // delete this->next;
-    // delete this->stmt;
+    delete this->next;
+    delete this->stmt;
 }
 
 If_Node::If_Node(Exp_Node *exp, Stmt_Node *stmt1, Stmt_Node *stmt2)
@@ -572,9 +576,9 @@ If_Node::If_Node(Exp_Node *exp, Stmt_Node *stmt1, Stmt_Node *stmt2)
 }
 If_Node::~If_Node()
 {
-    // delete this->exp;
-    // delete this->stmt1;
-    // delete this->stmt2;
+    delete this->exp;
+    delete this->stmt1;
+    delete this->stmt2;
 }
 
 While_Node::While_Node(Exp_Node *exp, Stmt_Node *stmt)
@@ -584,8 +588,8 @@ While_Node::While_Node(Exp_Node *exp, Stmt_Node *stmt)
 }
 While_Node::~While_Node()
 {
-    // delete this->exp;
-    // delete this->stmt;
+    delete this->exp;
+    delete this->stmt;
 }
 
 Switch_Node::Switch_Node(Exp_Node *exp, CaseBlock_Node *caseblock)
@@ -595,13 +599,13 @@ Switch_Node::Switch_Node(Exp_Node *exp, CaseBlock_Node *caseblock)
 }
 Switch_Node::Switch_Node()
 {
-    this->exp = NULL;
-    this->caseblock = NULL;
+    this->exp = nullptr;
+    this->caseblock = nullptr;
 }
 Switch_Node::~Switch_Node()
 {
-    // delete this->exp;
-    // delete this->caseblock;
+    delete this->exp;
+    delete this->caseblock;
 }
 
 CaseBlock_Node::CaseBlock_Node(Token_Node *num, StmtList_Node *stmtlist, CaseBlock_Node *next)
@@ -612,9 +616,9 @@ CaseBlock_Node::CaseBlock_Node(Token_Node *num, StmtList_Node *stmtlist, CaseBlo
 }
 CaseBlock_Node::~CaseBlock_Node()
 {
-    // delete this->num;
-    // delete this->stmtlist;
-    // delete this->next;
+    delete this->num;
+    delete this->stmtlist;
+    delete this->next;
 }
 
 ExpList_Node::ExpList_Node(Exp_Node *exp, ExpList_Node *next)
@@ -624,8 +628,8 @@ ExpList_Node::ExpList_Node(Exp_Node *exp, ExpList_Node *next)
 }
 ExpList_Node::~ExpList_Node()
 {
-    // delete this->exp;
-    // delete this->next;
+    delete this->exp;
+    delete this->next;
 }
 
 Try_Node::Try_Node(Stmt_Node *stmt1, Stmt_Node *stmt2)
@@ -635,8 +639,8 @@ Try_Node::Try_Node(Stmt_Node *stmt1, Stmt_Node *stmt2)
 }
 Try_Node::~Try_Node()
 {
-    // delete this->stmt1;
-    // delete this->stmt2;
+    delete this->stmt1;
+    delete this->stmt2;
 }
 
 Assign_Node::Assign_Node(Exp_Node *exp1, Exp_Node *exp2)
@@ -646,15 +650,15 @@ Assign_Node::Assign_Node(Exp_Node *exp1, Exp_Node *exp2)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 Assign_Node::~Assign_Node()
 {
-    // delete this->exp1;
-    // delete this->exp2;
+    delete this->exp1;
+    delete this->exp2;
 }
 
 NameExp_Node::NameExp_Node(Exp_Node *exp, Token_Node *id)
@@ -664,15 +668,15 @@ NameExp_Node::NameExp_Node(Exp_Node *exp, Token_Node *id)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 NameExp_Node::~NameExp_Node()
 {
-    // delete this->exp;
-    // delete this->id;
+    delete this->exp;
+    delete this->id;
 }
 
 PointerValueExp_Node::PointerValueExp_Node(Exp_Node *exp, Token_Node *id)
@@ -682,15 +686,15 @@ PointerValueExp_Node::PointerValueExp_Node(Exp_Node *exp, Token_Node *id)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 PointerValueExp_Node::~PointerValueExp_Node()
 {
-    // delete this->id;
-    // delete this->exp;
+    delete this->id;
+    delete this->exp;
 }
 
 AddressValue_Node::AddressValue_Node(Exp_Node *exp)
@@ -699,14 +703,14 @@ AddressValue_Node::AddressValue_Node(Exp_Node *exp)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 AddressValue_Node::~AddressValue_Node()
 {
-    // delete this->exp;
+    delete this->exp;
 }
 
 PointerValue_Node::PointerValue_Node(Exp_Node *exp)
@@ -715,14 +719,14 @@ PointerValue_Node::PointerValue_Node(Exp_Node *exp)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 PointerValue_Node::~PointerValue_Node()
 {
-    // delete this->exp;
+    delete this->exp;
 }
 
 Array_Node::Array_Node(Exp_Node *exp, ExpList_Node *explist)
@@ -732,15 +736,15 @@ Array_Node::Array_Node(Exp_Node *exp, ExpList_Node *explist)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 Array_Node::~Array_Node()
 {
-    // delete this->exp;
-    // delete this->explist;
+    delete this->exp;
+    delete this->explist;
 }
 
 Call_Node::Call_Node(Token_Node *id, ExpList_Node *explist)
@@ -750,15 +754,15 @@ Call_Node::Call_Node(Token_Node *id, ExpList_Node *explist)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 Call_Node::~Call_Node()
 {
-    // delete this->id;
-    // delete this->explist;
+    delete this->id;
+    delete this->explist;
 }
 
 RelationalOP_Node::RelationalOP_Node(Exp_Node *exp1, Exp_Node *exp2)
@@ -769,16 +773,16 @@ RelationalOP_Node::RelationalOP_Node(Exp_Node *exp1, Exp_Node *exp2)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 RelationalOP_Node::~RelationalOP_Node()
 {
-    // delete this->op;
-    // delete this->exp1;
-    // delete this->exp2;
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
 }
 
 AdditionOP_Node::AdditionOP_Node(Exp_Node *exp1, Exp_Node *exp2)
@@ -789,16 +793,16 @@ AdditionOP_Node::AdditionOP_Node(Exp_Node *exp1, Exp_Node *exp2)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 AdditionOP_Node::~AdditionOP_Node()
 {
-    // delete this->op;
-    // delete this->exp1;
-    // delete this->exp2;
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
 }
 
 MultiplicationOP_Node::MultiplicationOP_Node(Exp_Node *exp1, Exp_Node *exp2)
@@ -809,16 +813,16 @@ MultiplicationOP_Node::MultiplicationOP_Node(Exp_Node *exp1, Exp_Node *exp2)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 MultiplicationOP_Node::~MultiplicationOP_Node()
 {
-    // delete this->op;
-    // delete this->exp1;
-    // delete this->exp2;
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
 }
 
 BooleanOP_Node::BooleanOP_Node(Exp_Node *exp1, Exp_Node *exp2)
@@ -829,15 +833,15 @@ BooleanOP_Node::BooleanOP_Node(Exp_Node *exp1, Exp_Node *exp2)
 
     this->setLValue(false);
     this->setPointer(false);
-    this->setTypeLexeme(NULL);
+    this->setTypeLexeme(nullptr);
     this->setArraySize(0);
-    this->setLexeme(NULL);
+    this->setLexeme(nullptr);
 }
 BooleanOP_Node::~BooleanOP_Node()
 {
-    // delete this->op;
-    // delete this->exp1;
-    // delete this->exp2;
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
 }
 
 BitwiseOP_Node::BitwiseOP_Node(Exp_Node *exp1, Exp_Node *exp2)
@@ -848,15 +852,15 @@ BitwiseOP_Node::BitwiseOP_Node(Exp_Node *exp1, Exp_Node *exp2)
 
     this->setLValue(false);
     this->setPointer(false);
-    this->setTypeLexeme(NULL);
+    this->setTypeLexeme(nullptr);
     this->setArraySize(0);
-    this->setLexeme(NULL);
+    this->setLexeme(nullptr);
 }
 BitwiseOP_Node::~BitwiseOP_Node()
 {
-    // delete this->op;
-    // delete this->exp1;
-    // delete this->exp2;
+    delete this->op;
+    delete this->exp1;
+    delete this->exp2;
 }
 
 Sign_Node::Sign_Node(Exp_Node *exp)
@@ -865,14 +869,14 @@ Sign_Node::Sign_Node(Exp_Node *exp)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 Sign_Node::~Sign_Node()
 {
-    // delete this->exp;
+    delete this->exp;
 }
 
 Not_Node::Not_Node(Exp_Node *exp)
@@ -881,14 +885,14 @@ Not_Node::Not_Node(Exp_Node *exp)
 
     this->setType(0);
     this->setArraySize(0);
-    this->setLexeme(NULL);
-    this->setTypeLexeme(NULL);
+    this->setLexeme(nullptr);
+    this->setTypeLexeme(nullptr);
     this->setLValue(false);
     this->setPointer(false);
 }
 Not_Node::~Not_Node()
 {
-    // delete this->exp;
+    delete this->exp;
 }
 
 Type_Node::Type_Node(Token_Node *id, const char *lexeme)
@@ -899,5 +903,36 @@ Type_Node::Type_Node(Token_Node *id, const char *lexeme)
 
 Stmt_Node::Stmt_Node()
 {
-    this->stmt = NULL;
+    this->stmt = nullptr;
+}
+Stmt_Node::~Stmt_Node()
+{
+    delete this->stmt;
+}
+
+PrintLn_Node::PrintLn_Node(ExpList_Node *explist)
+{
+    this->explist = explist;
+}
+PrintLn_Node::~PrintLn_Node()
+{
+    delete this->explist;
+}
+
+Read_Node::Read_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+}
+Read_Node::~Read_Node()
+{
+    delete this->exp;
+}
+
+Return_Node::Return_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+}
+Return_Node::~Return_Node()
+{
+    delete this->exp;
 }

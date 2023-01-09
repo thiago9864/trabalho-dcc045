@@ -173,7 +173,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class VarList_Node : public Root_Node //: public Program_Node
+class VarList_Node : public Root_Node
 {
 private:
     NameDecl_Node *namedecl;
@@ -190,7 +190,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class FunctionList_Node : public Root_Node //: public Program_Node
+class FunctionList_Node : public Root_Node
 {
 private:
     Type_Node *type;
@@ -213,7 +213,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class TypeList_Node : public Root_Node //: public Program_Node
+class TypeList_Node : public Root_Node
 {
 private:
     VarList_Node *varlist;
@@ -231,7 +231,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class NameDecl_Node : public VarList_Node
+class NameDecl_Node : public Root_Node
 {
 private:
     Type_Node *type;
@@ -247,7 +247,30 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class StmtList_Node : public FunctionList_Node
+class Pointer_Node : public Root_Node
+{
+public:
+    Pointer_Node(){};
+    ~Pointer_Node(){};
+
+    inline void accept(Visitor *v) override { v->visit(this); }
+};
+
+class Stmt_Node : public Root_Node
+{
+private:
+    Root_Node *stmt;
+
+public:
+    Stmt_Node();
+    ~Stmt_Node();
+
+    inline Root_Node *getStmt() { return stmt; }
+
+    inline void accept(Visitor *v) override { v->visit(this); };
+};
+
+class StmtList_Node : public Stmt_Node
 {
 private:
     Stmt_Node *stmt;
@@ -255,7 +278,7 @@ private:
 
 public:
     StmtList_Node(Stmt_Node *stmt, StmtList_Node *next);
-    ~StmtList_Node();
+    ~StmtList_Node() override;
 
     inline Stmt_Node *getStmt() { return stmt; };
     inline StmtList_Node *Next() { return next; };
@@ -263,25 +286,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Pointer_Node : public Root_Node
-{
-public:
-    inline void accept(Visitor *v) override { v->visit(this); }
-};
-
-class Stmt_Node : public Root_Node //: public StmtList_Node
-{
-private:
-    Root_Node *stmt;
-
-public:
-    Stmt_Node();
-    inline Root_Node *getStmt() { return stmt; }
-
-    inline void accept(Visitor *v) override { v->visit(this); };
-};
-
-class If_Node : public Root_Node //: public Stmt_Node
+class If_Node : public Stmt_Node
 {
 private:
     Exp_Node *exp;
@@ -299,7 +304,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class While_Node : public Root_Node //: public Stmt_Node
+class While_Node : public Stmt_Node
 {
     Exp_Node *exp;
     Stmt_Node *stmt;
@@ -314,7 +319,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Switch_Node : public Root_Node //: public Stmt_Node
+class Switch_Node : public Stmt_Node
 {
 private:
     Exp_Node *exp;
@@ -334,8 +339,8 @@ public:
 class Break_Node : public Stmt_Node
 {
 public:
-    Break_Node();
-    ~Break_Node();
+    Break_Node(){};
+    ~Break_Node(){};
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
@@ -347,20 +352,20 @@ private:
 
 public:
     PrintLn_Node(ExpList_Node *explist);
-    ~PrintLn_Node();
+    ~PrintLn_Node() override;
 
     inline ExpList_Node *getExpList() { return explist; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Read_Node : public Root_Node //: public Stmt_Node
+class Read_Node : public Stmt_Node
 {
 private:
     Exp_Node *exp;
 
 public:
-    Read_Node();
+    Read_Node(Exp_Node *exp);
     ~Read_Node();
 
     inline Exp_Node *getExp() { return exp; };
@@ -368,7 +373,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Return_Node : public Root_Node //: public Stmt_Node
+class Return_Node : public Stmt_Node
 {
 private:
     Exp_Node *exp;
@@ -385,8 +390,8 @@ public:
 class Throw_Node : public Stmt_Node
 {
 public:
-    Throw_Node();
-    ~Throw_Node();
+    Throw_Node() = default;
+    ~Throw_Node() override = default;
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
@@ -472,7 +477,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class ExpList_Node : public Root_Node //: public PrintLn
+class ExpList_Node : public Root_Node
 {
 private:
     Exp_Node *exp;
@@ -736,7 +741,7 @@ public:
     virtual void accept(Visitor *v) override { v->visit(this); };
 };
 
-class Type_Node : public FunctionList_Node
+class Type_Node : public Root_Node
 {
 private:
     Token_Node *id;
