@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <typeinfo>
 #include "LexicalAnalyzer.h"
 #include "ErrorManager.h"
 #include "VisitorAST.h"
@@ -29,10 +30,10 @@ private:
     TypeList_Node *TypeDecl(TypeList_Node *typeDecl);
 
     static int sync_FatoraPg[];
-    Program_Node *FatoraPg(Type_Node *type, Token_Node *id);
+    Root_Node *FatoraPg(Token_Node *id, Type_Node *type, Pointer_Node *pointer, VarList_Node *varlist);
 
     static int sync_IdList[];
-    VarList_Node *IdList();
+    NameDecl_Node *IdList();
 
     static int sync_Pointer[];
     Pointer_Node *Pointer();
@@ -47,13 +48,13 @@ private:
     Array_Node *Array();
 
     static int sync_VarDecl[];
-    NameDecl_Node *VarDecl();
+    VarList_Node *VarDecl();
 
     static int sync_Params[];
-    void Params();
+    Params_Node *Params();
 
     static int sync_FunctionDecl[];
-    FunctionList_Node *FunctionDecl();
+    Function_Node *FunctionDecl(Token_Node *id, Type_Node *type, Pointer_Node *pointer, VarList_Node *varlist);
 
     static int sync_StmtList[];
     StmtList_Node *StmtList();
@@ -77,13 +78,13 @@ private:
     Stmt_Node *FatoraStmt();
 
     static int sync_IfOpt[];
-    If_Node *IfOpt();
+    Stmt_Node *IfOpt();
 
     static int sync_ElseOpt[];
-    If_Node *ElseOpt();
+    Stmt_Node *ElseOpt();
 
     static int sync_ArrayAcesso[];
-    void ArrayAcesso();
+    Exp_Node *ArrayAcesso();
 
     static int sync_ExprList[];
     ExpList_Node *ExprList();

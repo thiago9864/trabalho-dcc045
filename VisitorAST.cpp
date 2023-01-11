@@ -20,14 +20,14 @@ void Print_AST::down_height()
 void Print_AST::printNode(const char *node)
 {
     for (int i = 0; i < this->height; i++)
-        std::cout << "          ";
+        std::cout << "        ";
     std::cout << "-" << node << std::endl;
 }
 
 void Print_AST::printLexeme(const char *node, const char *lexeme)
 {
     for (int i = 0; i < this->height; i++)
-        std::cout << "    ";
+        std::cout << "        ";
     std::cout << "-" << node << "." << lexeme << std::endl;
 }
 
@@ -79,10 +79,15 @@ void Print_AST::visit(NameDecl_Node *node)
     this->printNode("NAME_DECL");
     up_height();
 
-    if (node->getType() != nullptr)
-        node->getType()->accept(this);
     if (node->Id() != nullptr)
         node->Id()->accept(this);
+    if (node->getPointer() != nullptr)
+        node->getPointer()->accept(this);
+    if (node->getArray() != nullptr)
+        node->getArray()->accept(this);
+    if (node->Next() != nullptr)
+        node->Next()->accept(this);
+
     down_height();
 }
 
@@ -91,17 +96,8 @@ void Print_AST::visit(FunctionList_Node *node)
     this->printNode("FUNCTION_LIST");
     up_height();
 
-    if (node->getType() != nullptr)
-    {
-        std::cout << (node->getType()->getLexeme()) << std::endl;
-        node->getType()->accept(this);
-    }
-    if (node->Id() != nullptr)
-        node->Id()->accept(this);
-    if (node->getVarList() != nullptr)
-        node->getVarList()->accept(this);
-    if (node->getStmtList() != nullptr)
-        node->getStmtList()->accept(this);
+    if (node->getFunction() != nullptr)
+        node->getFunction()->accept(this);
     if (node->Next() != nullptr)
         node->Next()->accept(this);
     down_height();
@@ -123,12 +119,14 @@ void Print_AST::visit(TypeList_Node *node)
 
 void Print_AST::visit(Type_Node *node)
 {
-    this->printNode("TYPE");
-    up_height();
-
-    if (node->Id() != nullptr)
-        node->Id()->accept(this);
-    down_height();
+    if (node->Id()->getLexeme() != nullptr)
+    {
+        this->printLexeme(getTokenName(node->Id()->getToken()), node->Id()->getLexeme());
+    }
+    else
+    {
+        this->printNode(getTokenName(node->Id()->getToken()));
+    }
 }
 
 void Print_AST::visit(Pointer_Node *node)
@@ -474,10 +472,41 @@ void Print_AST::visit(Sign_Node *node)
     down_height();
 }
 
+void Print_AST::visit(Params_Node *node)
+{
+    this->printNode("Params");
+    up_height();
+
+    if (node->Id() != nullptr)
+        node->Id()->accept(this);
+    if (node->getType() != nullptr)
+        node->getType()->accept(this);
+    if (node->getPointer() != nullptr)
+        node->getPointer()->accept(this);
+    if (node->getArray() != nullptr)
+        node->getArray()->accept(this);
+    if (node->Next() != nullptr)
+        node->Next()->accept(this);
+
+    down_height();
+}
+
+void Print_AST::visit(Function_Node *node)
+{
+    if (node->getType() != nullptr)
+        node->getType()->accept(this);
+    if (node->Id() != nullptr)
+        node->Id()->accept(this);
+    if (node->getVarList() != nullptr)
+        node->getVarList()->accept(this);
+    if (node->getStmtList() != nullptr)
+        node->getStmtList()->accept(this);
+}
+
 Token_Node::Token_Node(int token, const char *lexeme)
 {
     this->token = token;
-    this->size = 0;
+    this->lexeme = lexeme;
 
     this->setType(0);
     this->setArraySize(0);
@@ -500,36 +529,33 @@ Program_Node::~Program_Node()
     delete this->functionlist;
 }
 
-VarList_Node::VarList_Node(NameDecl_Node *namedecl, VarList_Node *next)
+VarList_Node::VarList_Node(Type_Node *type, NameDecl_Node *namedecl, VarList_Node *next)
 {
+    this->type = type;
     this->namedecl = namedecl;
     this->next = next;
 }
 VarList_Node::VarList_Node()
 {
+    type = nullptr;
     namedecl = nullptr;
     next = nullptr;
-};
+}
 VarList_Node::~VarList_Node()
 {
+    delete this->type;
     delete this->namedecl;
     delete this->next;
 }
 
-FunctionList_Node::FunctionList_Node(Type_Node *type, Token_Node *id, VarList_Node *varlist, StmtList_Node *stmtlist, FunctionList_Node *next)
+FunctionList_Node::FunctionList_Node(Function_Node *func, FunctionList_Node *next)
 {
-    this->type = type;
-    this->id = id;
-    this->varlist = varlist;
-    this->stmtlist = stmtlist;
+    this->func = func;
     this->next = next;
 }
 FunctionList_Node::~FunctionList_Node()
 {
-    delete this->type;
-    delete this->id;
-    delete this->varlist;
-    delete this->stmtlist;
+    delete this->func;
     delete this->next;
 }
 
@@ -546,15 +572,19 @@ TypeList_Node::~TypeList_Node()
     delete this->next;
 }
 
-NameDecl_Node::NameDecl_Node(Type_Node *type, Token_Node *id)
+NameDecl_Node::NameDecl_Node(Token_Node *id, Pointer_Node *pointer, Array_Node *array, NameDecl_Node *next)
 {
-    this->type = type;
     this->id = id;
+    this->pointer = pointer;
+    this->array = array;
+    this->next = next;
 }
 NameDecl_Node::~NameDecl_Node()
 {
-    delete this->type;
     delete this->id;
+    delete this->pointer;
+    delete this->array;
+    delete this->next;
 }
 
 StmtList_Node::StmtList_Node(Stmt_Node *stmt, StmtList_Node *next)
@@ -805,7 +835,7 @@ AdditionOP_Node::~AdditionOP_Node()
     delete this->exp2;
 }
 
-MultiplicationOP_Node::MultiplicationOP_Node(Exp_Node *exp1, Exp_Node *exp2)
+MultiplicationOP_Node::MultiplicationOP_Node(Token_Node *op, Exp_Node *exp1, Exp_Node *exp2)
 {
     this->op = op;
     this->exp1 = exp1;
@@ -935,4 +965,38 @@ Return_Node::Return_Node(Exp_Node *exp)
 Return_Node::~Return_Node()
 {
     delete this->exp;
+}
+
+Params_Node::Params_Node(Token_Node *id, Type_Node *type, Pointer_Node *pointer, Array_Node *array, Params_Node *next)
+{
+    this->id = id;
+    this->type = type;
+    this->pointer = pointer;
+    this->array = array;
+    this->next = next;
+}
+Params_Node::~Params_Node()
+{
+    delete this->id;
+    delete this->type;
+    delete this->pointer;
+    delete this->array;
+    delete this->next;
+}
+
+Function_Node::Function_Node(Type_Node *type, Token_Node *id, VarList_Node *varlist, StmtList_Node *stmtlist, Params_Node *params)
+{
+    this->type = type;
+    this->id = id;
+    this->varlist = varlist;
+    this->stmtlist = stmtlist;
+    this->params = params;
+}
+Function_Node::~Function_Node()
+{
+    delete this->type;
+    delete this->id;
+    delete this->varlist;
+    delete this->stmtlist;
+    delete this->params;
 }
