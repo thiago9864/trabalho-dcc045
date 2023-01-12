@@ -20,14 +20,14 @@ void Print_AST::down_height()
 void Print_AST::printNode(const char *node)
 {
     for (int i = 0; i < this->height; i++)
-        std::cout << "        ";
+        std::cout << "     ";
     std::cout << "-" << node << std::endl;
 }
 
 void Print_AST::printLexeme(const char *node, const char *lexeme)
 {
     for (int i = 0; i < this->height; i++)
-        std::cout << "        ";
+        std::cout << "     ";
     std::cout << "-" << node << "." << lexeme << std::endl;
 }
 

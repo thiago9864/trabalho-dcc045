@@ -617,8 +617,7 @@ StmtList_Node *RDParser::StmtListK()
     case AMP:
     {
         // StmtListK ::= StmtList
-        StmtList();
-        return nullptr;
+        return StmtList();
     }
     case RBRACE:
     case CASE:
@@ -766,19 +765,19 @@ Stmt_Node *RDParser::Stmt()
         // Stmt ::= if ( Expr ) { StmtList } IfOpt
         matchOrSkip(IF, sync_Stmt);
         matchOrSkip(LPAREN, sync_Stmt);
-        Expr();
+        Exp_Node *exp = Expr();
 
         matchOrSkip(RPAREN, sync_Stmt);
-        Stmt();
-        ElseOpt();
+        Stmt_Node *stmt = Stmt();
+        Stmt_Node *elseOpt = ElseOpt();
 
         matchOrSkip(LBRACE, sync_Stmt);
 
-        StmtList();
+        StmtList_Node *stmtlist = new StmtList_Node(stmt, StmtList());
 
         matchOrSkip(RBRACE, sync_Stmt);
 
-        Stmt_Node *ifOpt = IfOpt();
+        If_Node *ifOpt = new If_Node(exp, IfOpt(), elseOpt);
 
         return ifOpt;
     }
@@ -885,13 +884,17 @@ Stmt_Node *RDParser::Stmt()
         return tryNode;
     }
     case AMP:
+    {
         // Stmt ::= & id = Expr ;
         matchOrSkip(AMP, sync_Stmt);
         matchOrSkip(ID, sync_Stmt);
         matchOrSkip(ASSIGN, sync_Stmt);
-        Expr();
+        Exp_Node *exp = Expr();
         matchOrSkip(SEMICOLON, sync_Stmt);
-        return nullptr;
+
+        AddressValue_Node *address = new AddressValue_Node(exp);
+        return address;
+    }
     default:
         defaultError(sync_Stmt);
     }
@@ -909,7 +912,7 @@ Stmt_Node *RDParser::FatoraStmt()
     case MULT:
     {
         // FatoraStmt ::= IdList ;
-        IdList();
+        NameDecl_Node *idlist = IdList();
 
         matchOrSkip(SEMICOLON, sync_FatoraStmt);
 
@@ -917,24 +920,33 @@ Stmt_Node *RDParser::FatoraStmt()
     }
     case LBRACKET:
     case ASSIGN:
+    {
         // FatoraStmt ::= ArrayAcesso = Expr ;
-        ArrayAcesso();
+        Exp_Node *array = ArrayAcesso();
         matchOrSkip(ASSIGN, sync_FatoraStmt);
-        Expr();
+        Exp_Node *exp = Expr();
 
         matchOrSkip(SEMICOLON, sync_FatoraStmt);
 
-        return nullptr;
+        Assign_Node *assign = new Assign_Node(array, exp);
+
+        return array;
+    }
     case LPAREN:
+    {
         // FatoraStmt ::= ( ExprList ) ;
         matchOrSkip(LPAREN, sync_FatoraStmt);
 
-        ExprList();
+        Token_Node *id = new Token_Node(ID, getLexeme());
+        ExpList_Node *explist = ExprList();
 
         matchOrSkip(RPAREN, sync_FatoraStmt);
         matchOrSkip(SEMICOLON, sync_FatoraStmt);
 
-        return nullptr;
+        Call_Node *call = new Call_Node(id, explist);
+
+        return call;
+    }
     default:
         defaultError(sync_FatoraStmt);
     }
@@ -975,8 +987,7 @@ Stmt_Node *RDParser::IfOpt()
         // IfOpt ::= else ElseOpt
         matchOrSkip(ELSE, sync_IfOpt);
 
-        Stmt_Node *elseOpt = ElseOpt();
-        return elseOpt;
+        return ElseOpt();
     }
     default:
         defaultError(sync_IfOpt);
@@ -994,27 +1005,27 @@ Stmt_Node *RDParser::ElseOpt()
         // ElseOpt ::= { StmtList }
         matchOrSkip(LBRACE, sync_ElseOpt);
 
-        StmtList();
+        StmtList_Node *stmtlist = StmtList();
 
         matchOrSkip(RBRACE, sync_ElseOpt);
 
-        return nullptr;
+        return stmtlist;
     }
     case IF:
     {
         // ElseOpt ::= if ( Expr ) { StmtList } IfOpt
         matchOrSkip(IF, sync_ElseOpt);
         matchOrSkip(LPAREN, sync_ElseOpt);
-        Expr();
+        Exp_Node *exp = Expr();
 
         matchOrSkip(RPAREN, sync_ElseOpt);
         matchOrSkip(LBRACE, sync_ElseOpt);
 
-        StmtList();
+        StmtList_Node *stmtlistElse = StmtList();
 
         matchOrSkip(RBRACE, sync_ElseOpt);
 
-        Stmt_Node *ifOpt = IfOpt();
+        If_Node *ifOpt = new If_Node(exp, IfOpt(), stmtlistElse);
         return ifOpt;
     }
     default:
@@ -1087,8 +1098,8 @@ ExpList_Node *RDParser::ExprList()
     case FALSE:
     {
         // ExprList ::= Expr ExprListTail
-        Expr();
-        return ExprListTail();
+        ExpList_Node *explist = new ExpList_Node(Expr(), ExprListTail());
+        return explist;
     }
     case RPAREN:
         // ExprList ::= ε
@@ -1108,8 +1119,8 @@ ExpList_Node *RDParser::ExprListTail()
     {
         // ExprListTail ::= , Expr ExprListTail
         matchOrSkip(COMMA, sync_ExprListTail);
-        Expr();
-        return ExprListTail();
+        ExpList_Node *explist = new ExpList_Node(Expr(), ExprListTail());
+        return explist;
     }
     case RPAREN:
         // ExprListTail ::= ε
@@ -1601,48 +1612,90 @@ Exp_Node *RDParser::Primary()
     case ID:
         // Primary ::= id PrimaryFatora
         matchOrSkip(ID, sync_Primary);
-        PrimaryFatora();
-        break;
+        return PrimaryFatora();
     case MULT:
+    {
         // Primary ::= * id
         matchOrSkip(MULT, sync_Primary);
+
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(ID);
+        exp->setLexeme(getLexeme());
         matchOrSkip(ID, sync_Primary);
-        break;
+        return exp;
+    }
     case NUM_INT:
+    {
         // Primary ::= num_int
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(NUM_INT);
+        exp->setLexeme(getLexeme());
         matchOrSkip(NUM_INT, sync_Primary);
-        break;
+        return exp;
+    }
     case LPAREN:
+    {
         // Primary ::= ( Expr )
         matchOrSkip(LPAREN, sync_Primary);
-        Expr();
+
+        Exp_Node *exp = Expr();
         matchOrSkip(RPAREN, sync_Primary);
-        break;
+        return exp;
+    }
     case AMP:
+    {
         // Primary ::= & id
         matchOrSkip(AMP, sync_Primary);
+
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(ID);
+        exp->setLexeme(getLexeme());
         matchOrSkip(ID, sync_Primary);
-        break;
+        return exp;
+    }
     case NUM_REAL:
+    {
         // Primary ::= num_real
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(NUM_REAL);
+        exp->setLexeme(getLexeme());
         matchOrSkip(NUM_REAL, sync_Primary);
-        break;
+        return exp;
+    }
     case LITERAL:
+    {
         // Primary ::= literal
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(LITERAL);
+        exp->setLexeme(getLexeme());
         matchOrSkip(LITERAL, sync_Primary);
-        break;
+        return exp;
+    }
     case ASCII:
+    {
         // Primary ::= ascii
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(ASCII);
+        exp->setLexeme(getLexeme());
         matchOrSkip(ASCII, sync_Primary);
-        break;
+        return exp;
+    }
     case TRUE:
+    {
         // Primary ::= true
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(TRUE);
         matchOrSkip(TRUE, sync_Primary);
-        break;
+        return exp;
+    }
     case FALSE:
+    {
         // Primary ::= false
+        Exp_Node *exp = new Exp_Node();
+        exp->setType(FALSE);
         matchOrSkip(FALSE, sync_Primary);
-        break;
+        return exp;
+    }
     default:
         defaultError(sync_Primary);
     }
@@ -1676,8 +1729,7 @@ Exp_Node *RDParser::PrimaryFatora()
     case DIV:
     case MOD:
         // PrimaryFatora ::= ArrayAcesso
-        ArrayAcesso();
-        break;
+        return ArrayAcesso();
     case LPAREN:
     {
         // PrimaryFatora ::= ( ExprList )
