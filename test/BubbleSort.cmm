@@ -29,7 +29,11 @@ int main() {
     // Vetor a ordenar
     int teste[5];
     int i;
-    teste={5,0,1,4,3};
+    teste[0] = 5;
+    teste[1] = 0;
+    teste[2] = 1;
+    teste[3] = 4;
+    teste[4] = 3;
     i=0;
     while(i<5){
         print("%d ", teste[i]);
