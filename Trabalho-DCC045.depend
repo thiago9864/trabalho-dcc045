@@ -54,7 +54,7 @@
 1672152856 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\errormanager.cpp
 	"ErrorManager.h"
 
-1673532798 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.cpp
+1673537420 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\lexicalanalyzer.cpp
 	"LexicalAnalyzer.h"
 
 1672152856 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\main.cpp
@@ -67,7 +67,7 @@
 	"CExport.h"
 	"RDParser.h"
 
-1673532862 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.h
+1673537420 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.h
 	<stdlib.h>
 	<iostream>
 	<cstring>
@@ -77,13 +77,13 @@
 	"ErrorManager.h"
 	"VisitorAST.h"
 
-1673532845 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.cpp
+1673537420 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\rdparser.cpp
 	"RDParser.h"
 
-1673536896 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\visitorast.h
+1673537420 c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\visitorast.h
 	<iostream>
 	"LexicalAnalyzer.h"
 
-1673532798 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\visitorast.cpp
+1673537420 source:c:\users\thiago\desktop\repositorios\ufjf\trabalho-dcc045\visitorast.cpp
 	"VisitorAST.h"
 
