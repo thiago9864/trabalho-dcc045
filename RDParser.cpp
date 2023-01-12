@@ -744,10 +744,12 @@ Stmt_Node *RDParser::Stmt()
     switch (lookAhead)
     {
     case ID:
+    {
         // Stmt ::= id FatoraStmt
         Token_Node *id = new Token_Node(ID, getLexeme());
         matchOrSkip(ID, sync_Stmt);
         return FatoraStmt();
+    }
     case LBRACE:
     {
         // Stmt ::= { StmtList }
@@ -1655,6 +1657,7 @@ Exp_Node *RDParser::Expr7()
 int RDParser::sync_Primary[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, MULT, DIV, MOD, AMP, END_OF_FILE};
 Exp_Node *RDParser::Primary()
 {
+    printf("Primary\n");
     switch (lookAhead)
     {
     case ID:
