@@ -46,6 +46,8 @@
 		<Unit filename="TableEntry.cpp" />
 		<Unit filename="TableEntry.h" />
 		<Unit filename="TokenDefinitions.h" />
+		<Unit filename="VisitorAST.cpp" />
+		<Unit filename="VisitorAST.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
