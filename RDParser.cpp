@@ -2,7 +2,7 @@
 
 RDParser::RDParser()
 {
-    // printf("[DEBUG] *************** Inicializa o parser ***************\n");
+     printf("********************* PARSER OUTPUT *********************\n");
 }
 RDParser::~RDParser() {}
 
@@ -40,6 +40,11 @@ void RDParser::matchOrSkip(int expectedToken, const int *syncArr)
     }
     else
     {
+        if(lookAhead == ID || lookAhead == NUM_INT || lookAhead == NUM_REAL || lookAhead==LITERAL){
+            printf("MATCH: %s.%s\n", getTokenName(lookAhead), getLexeme());
+        } else {
+            printf("MATCH: %s\n", getTokenName(lookAhead));
+        }
         nextToken();
     }
 }
@@ -109,6 +114,7 @@ void RDParser::syncError(const int *syncArr)
 int RDParser::sync_Program[] = {END_OF_FILE};
 Program_Node *RDParser::Program(FunctionList_Node *functionlist, TypeList_Node *typelist, VarList_Node *varlist)
 {
+    printf("Program\n");
     switch (lookAhead)
     {
     case END_OF_FILE:
@@ -165,6 +171,7 @@ Program_Node *RDParser::Program(FunctionList_Node *functionlist, TypeList_Node *
 int RDParser::sync_TypeDecl[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 TypeList_Node *RDParser::TypeDecl(TypeList_Node *typeDecl)
 {
+    printf("TypeDecl\n");
     switch (lookAhead)
     {
     case TYPEDEF:
@@ -200,6 +207,7 @@ TypeList_Node *RDParser::TypeDecl(TypeList_Node *typeDecl)
 int RDParser::sync_FatoraPg[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 Root_Node *RDParser::FatoraPg(Token_Node *id, Type_Node *type, Pointer_Node *pointer, VarList_Node *varlist)
 {
+    printf("FatoraPg\n");
     switch (lookAhead)
     {
     case ID:
@@ -233,6 +241,7 @@ Root_Node *RDParser::FatoraPg(Token_Node *id, Type_Node *type, Pointer_Node *poi
 int RDParser::sync_IdList[] = {SEMICOLON, END_OF_FILE};
 NameDecl_Node *RDParser::IdList()
 {
+    printf("IdList\n");
     switch (lookAhead)
     {
     case ID:
@@ -282,6 +291,7 @@ NameDecl_Node *RDParser::IdList()
 int RDParser::sync_Pointer[] = {ID, END_OF_FILE};
 Pointer_Node *RDParser::Pointer()
 {
+    printf("Pointer\n");
     switch (lookAhead)
     {
     case ID:
@@ -304,7 +314,7 @@ Pointer_Node *RDParser::Pointer()
 int RDParser::sync_Type[] = {ID, MULT, SEMICOLON, COMMA, END_OF_FILE};
 Type_Node *RDParser::Type()
 {
-
+    printf("Type\n");
     switch (lookAhead)
     {
     case ID:
@@ -339,6 +349,7 @@ Type_Node *RDParser::Type()
 int RDParser::sync_TypePure[] = {ID, MULT, SEMICOLON, COMMA, END_OF_FILE};
 Type_Node *RDParser::TypePure()
 {
+    printf("TypePure\n");
     switch (lookAhead)
     {
     case INTEGER:
@@ -417,6 +428,7 @@ Type_Node *RDParser::TypePure()
 int RDParser::sync_Array[] = {SEMICOLON, ID, COMMA, MULT, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, RPAREN, END_OF_FILE};
 Array_Node *RDParser::Array()
 {
+    printf("Array\n");
     switch (lookAhead)
     {
     case ID:
@@ -453,6 +465,7 @@ Array_Node *RDParser::Array()
 int RDParser::sync_VarDecl[] = {RBRACE, END_OF_FILE};
 VarList_Node *RDParser::VarDecl()
 {
+    printf("VarDecl\n");
     switch (lookAhead)
     {
     case ID:
@@ -484,6 +497,7 @@ VarList_Node *RDParser::VarDecl()
 int RDParser::sync_Params[] = {RPAREN, END_OF_FILE};
 Params_Node *RDParser::Params()
 {
+    printf("Params\n");
     switch (lookAhead)
     {
     case ID:
@@ -534,6 +548,7 @@ Params_Node *RDParser::Params()
 int RDParser::sync_FunctionDecl[] = {TYPEDEF, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, END_OF_FILE};
 Function_Node *RDParser::FunctionDecl(Token_Node *id, Type_Node *type, Pointer_Node *pointer, VarList_Node *varlist)
 {
+    printf("FunctionDecl\n");
     switch (lookAhead)
     {
     case LPAREN:
@@ -559,6 +574,7 @@ Function_Node *RDParser::FunctionDecl(Token_Node *id, Type_Node *type, Pointer_N
 int RDParser::sync_StmtList[] = {RBRACE, CASE, END_OF_FILE};
 StmtList_Node *RDParser::StmtList()
 {
+    printf("StmtList\n");
     switch (lookAhead)
     {
     case ID:
@@ -582,7 +598,9 @@ StmtList_Node *RDParser::StmtList()
     case AMP:
     {
         // StmtList ::= Stmt StmtListK
-        StmtList_Node *stmtlist = new StmtList_Node(Stmt(), StmtListK());
+        Stmt_Node *stmt = Stmt();
+        StmtList_Node *stmtListK = StmtListK();
+        StmtList_Node *stmtlist = new StmtList_Node(stmt, stmtListK);
         return stmtlist;
     }
     default:
@@ -594,6 +612,7 @@ StmtList_Node *RDParser::StmtList()
 int RDParser::sync_StmtListK[] = {RBRACE, CASE, END_OF_FILE};
 StmtList_Node *RDParser::StmtListK()
 {
+    printf("StmtListK\n");
     switch (lookAhead)
     {
     case ID:
@@ -632,6 +651,7 @@ StmtList_Node *RDParser::StmtListK()
 int RDParser::sync_CaseBlock[] = {RBRACE, END_OF_FILE};
 CaseBlock_Node *RDParser::CaseBlock()
 {
+    printf("CaseBlock\n");
     switch (lookAhead)
     {
     case CASE:
@@ -654,6 +674,7 @@ CaseBlock_Node *RDParser::CaseBlock()
 int RDParser::sync_CaseBlockL[] = {RBRACE, END_OF_FILE};
 CaseBlock_Node *RDParser::CaseBlockL(Token_Node *token)
 {
+    printf("CaseBlockL\n");
     switch (lookAhead)
     {
     case ID:
@@ -695,6 +716,7 @@ CaseBlock_Node *RDParser::CaseBlockL(Token_Node *token)
 int RDParser::sync_CaseBlockF[] = {RBRACE, END_OF_FILE};
 CaseBlock_Node *RDParser::CaseBlockF()
 {
+    printf("CaseBlockF\n");
     switch (lookAhead)
     {
     case RBRACE:
@@ -715,6 +737,7 @@ CaseBlock_Node *RDParser::CaseBlockF()
 int RDParser::sync_Stmt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, MULT, AMP, CATCH, CASE, END_OF_FILE};
 Stmt_Node *RDParser::Stmt()
 {
+    printf("Stmt\n");
     switch (lookAhead)
     {
     case ID:
@@ -753,12 +776,12 @@ Stmt_Node *RDParser::Stmt()
     case DOUBLE:
     {
         // Stmt ::= TypePure IdList ;
-        TypePure();
-
-        IdList();
-
+        Type_Node *typenode = TypePure();
+        NameDecl_Node *idlist = IdList();
         matchOrSkip(SEMICOLON, sync_Stmt);
-        return nullptr;
+
+        VarList_Node *varlist = new VarList_Node(typenode, idlist, nullptr);
+        return varlist;
     }
     case IF:
     {
@@ -904,6 +927,7 @@ Stmt_Node *RDParser::Stmt()
 int RDParser::sync_FatoraStmt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, MULT, AMP, CATCH, CASE, END_OF_FILE};
 Stmt_Node *RDParser::FatoraStmt()
 {
+    printf("FatoraStmt\n");
     switch (lookAhead)
     {
     case ID:
@@ -956,6 +980,7 @@ Stmt_Node *RDParser::FatoraStmt()
 int RDParser::sync_IfOpt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, MULT, AMP, CATCH, CASE, END_OF_FILE};
 Stmt_Node *RDParser::IfOpt()
 {
+    printf("IfOpt\n");
     switch (lookAhead)
     {
     case ID:
@@ -998,6 +1023,7 @@ Stmt_Node *RDParser::IfOpt()
 int RDParser::sync_ElseOpt[] = {RBRACE, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LBRACE, TRY, ID, INTEGER, LONG, FLOAT, BOOL, CHAR, DOUBLE, MULT, AMP, CATCH, CASE, END_OF_FILE};
 Stmt_Node *RDParser::ElseOpt()
 {
+    printf("ElseOpt\n");
     switch (lookAhead)
     {
     case LBRACE:
@@ -1037,6 +1063,7 @@ Stmt_Node *RDParser::ElseOpt()
 int RDParser::sync_ArrayAcesso[] = {ASSIGN, RPAREN, SEMICOLON, RBRACKET, COMMA, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, MULT, DIV, MOD, AMP, END_OF_FILE};
 Exp_Node *RDParser::ArrayAcesso()
 {
+    printf("ArrayAcesso\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1081,6 +1108,7 @@ Exp_Node *RDParser::ArrayAcesso()
 int RDParser::sync_ExprList[] = {RPAREN, END_OF_FILE};
 ExpList_Node *RDParser::ExprList()
 {
+    printf("ExprList\n");
     switch (lookAhead)
     {
     case ID:
@@ -1113,6 +1141,7 @@ ExpList_Node *RDParser::ExprList()
 int RDParser::sync_ExprListTail[] = {RPAREN, END_OF_FILE};
 ExpList_Node *RDParser::ExprListTail()
 {
+    printf("ExprListTail\n");
     switch (lookAhead)
     {
     case COMMA:
@@ -1134,6 +1163,7 @@ ExpList_Node *RDParser::ExprListTail()
 int RDParser::sync_Expr[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, END_OF_FILE};
 Exp_Node *RDParser::Expr()
 {
+    printf("Expr\n");
     switch (lookAhead)
     {
     case ID:
@@ -1163,6 +1193,7 @@ Exp_Node *RDParser::Expr()
 int RDParser::sync_ExprL[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, END_OF_FILE};
 Exp_Node *RDParser::ExprL()
 {
+    printf("ExprL\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1186,6 +1217,7 @@ Exp_Node *RDParser::ExprL()
 int RDParser::sync_Expr1[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, END_OF_FILE};
 Exp_Node *RDParser::Expr1()
 {
+    printf("Expr1\n");
     switch (lookAhead)
     {
     case ID:
@@ -1214,6 +1246,7 @@ Exp_Node *RDParser::Expr1()
 int RDParser::sync_Expr1L[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, END_OF_FILE};
 Exp_Node *RDParser::Expr1L()
 {
+    printf("Expr1L\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1237,6 +1270,7 @@ Exp_Node *RDParser::Expr1L()
 int RDParser::sync_Expr2[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, END_OF_FILE};
 Exp_Node *RDParser::Expr2()
 {
+    printf("Expr2\n");
     switch (lookAhead)
     {
     case ID:
@@ -1265,6 +1299,7 @@ Exp_Node *RDParser::Expr2()
 int RDParser::sync_Expr2L[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, END_OF_FILE};
 Exp_Node *RDParser::Expr2L()
 {
+    printf("Expr2L\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1289,6 +1324,7 @@ Exp_Node *RDParser::Expr2L()
 int RDParser::sync_Expr3[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, END_OF_FILE};
 Exp_Node *RDParser::Expr3()
 {
+    printf("Expr3\n");
     switch (lookAhead)
     {
     case ID:
@@ -1317,6 +1353,7 @@ Exp_Node *RDParser::Expr3()
 int RDParser::sync_Expr3L[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, END_OF_FILE};
 Exp_Node *RDParser::Expr3L()
 {
+    printf("Expr3L\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1347,6 +1384,7 @@ Exp_Node *RDParser::Expr3L()
 int RDParser::sync_Expr4[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, END_OF_FILE};
 Exp_Node *RDParser::Expr4()
 {
+    printf("Expr4\n");
     switch (lookAhead)
     {
     case ID:
@@ -1375,6 +1413,7 @@ Exp_Node *RDParser::Expr4()
 int RDParser::sync_Expr4L[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, END_OF_FILE};
 Exp_Node *RDParser::Expr4L()
 {
+    printf("Expr4L\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1417,6 +1456,7 @@ Exp_Node *RDParser::Expr4L()
 int RDParser::sync_Expr5[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, END_OF_FILE};
 Exp_Node *RDParser::Expr5()
 {
+    printf("Expr5\n");
     switch (lookAhead)
     {
     case ID:
@@ -1445,6 +1485,7 @@ Exp_Node *RDParser::Expr5()
 int RDParser::sync_Expr5L[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, END_OF_FILE};
 Exp_Node *RDParser::Expr5L()
 {
+    printf("Expr5L\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1486,6 +1527,7 @@ Exp_Node *RDParser::Expr5L()
 int RDParser::sync_Expr6[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, END_OF_FILE};
 Exp_Node *RDParser::Expr6()
 {
+    printf("Expr6\n");
     switch (lookAhead)
     {
     case ID:
@@ -1514,6 +1556,7 @@ Exp_Node *RDParser::Expr6()
 int RDParser::sync_Expr6L[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, END_OF_FILE};
 Exp_Node *RDParser::Expr6L()
 {
+    printf("Expr6L\n");
     switch (lookAhead)
     {
     case SEMICOLON:
@@ -1563,6 +1606,7 @@ Exp_Node *RDParser::Expr6L()
 int RDParser::sync_Expr7[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, MULT, DIV, MOD, AMP, END_OF_FILE};
 Exp_Node *RDParser::Expr7()
 {
+    printf("Expr7\n");
     switch (lookAhead)
     {
     case ID:
@@ -1607,6 +1651,7 @@ Exp_Node *RDParser::Expr7()
 int RDParser::sync_Primary[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, MULT, DIV, MOD, AMP, END_OF_FILE};
 Exp_Node *RDParser::Primary()
 {
+    printf("Primary\n");
     switch (lookAhead)
     {
     case ID:
@@ -1705,6 +1750,7 @@ Exp_Node *RDParser::Primary()
 int RDParser::sync_PrimaryFatora[] = {RPAREN, SEMICOLON, RBRACKET, COMMA, ASSIGN, OR, AND, EQUAL, NOT_EQUAL, LE, LEQ, GTE, GT, SUM, MINUS, VERBAR, MULT, DIV, MOD, AMP, END_OF_FILE};
 Exp_Node *RDParser::PrimaryFatora()
 {
+    printf("PrimaryFatora\n");
     switch (lookAhead)
     {
     case SEMICOLON:

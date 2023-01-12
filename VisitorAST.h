@@ -179,23 +179,7 @@ public:
     inline void accept(Visitor *v) override { v->visit(this); };
 };
 
-class VarList_Node : public Root_Node
-{
-private:
-    Type_Node *type;
-    NameDecl_Node *namedecl;
-    VarList_Node *next;
 
-public:
-    VarList_Node(Type_Node *type, NameDecl_Node *namedecl, VarList_Node *next);
-    VarList_Node();
-    ~VarList_Node();
-
-    inline NameDecl_Node *getNameDecl() { return namedecl; };
-    inline VarList_Node *Next() { return next; };
-
-    inline void accept(Visitor *v) override { v->visit(this); };
-};
 
 class FunctionList_Node : public Root_Node
 {
@@ -271,6 +255,24 @@ public:
     ~Stmt_Node();
 
     inline Root_Node *getStmt() { return stmt; }
+
+    inline void accept(Visitor *v) override { v->visit(this); };
+};
+
+class VarList_Node : public Stmt_Node//Root_Node
+{
+private:
+    Type_Node *type;
+    NameDecl_Node *namedecl;
+    VarList_Node *next;
+
+public:
+    VarList_Node(Type_Node *type, NameDecl_Node *namedecl, VarList_Node *next);
+    VarList_Node();
+    ~VarList_Node();
+
+    inline NameDecl_Node *getNameDecl() { return namedecl; };
+    inline VarList_Node *Next() { return next; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
 };
