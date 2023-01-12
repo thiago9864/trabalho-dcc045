@@ -474,7 +474,7 @@ void Print_AST::visit(Sign_Node *node)
 
 void Print_AST::visit(Params_Node *node)
 {
-    this->printNode("Params");
+    this->printNode("PARAMS");
     up_height();
 
     if (node->Id() != nullptr)
@@ -503,17 +503,26 @@ void Print_AST::visit(Function_Node *node)
         node->getStmtList()->accept(this);
 }
 
+void Print_AST::visit(Primary_Node *node)
+{
+    this->printNode("PRIMARY");
+    up_height();
+
+    if (node->getToken() != nullptr)
+        node->getToken()->accept(this);
+    if (node->getExp() != nullptr)
+        node->getExp()->accept(this);
+
+    down_height();
+}
+
 Token_Node::Token_Node(int token, const char *lexeme)
 {
     this->token = token;
-    this->lexeme = lexeme;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(lexeme);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 
 Program_Node::Program_Node(FunctionList_Node *functionlist, TypeList_Node *typelist, VarList_Node *varlist)
@@ -679,11 +688,8 @@ Assign_Node::Assign_Node(Exp_Node *exp1, Exp_Node *exp2)
     this->exp2 = exp2;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 Assign_Node::~Assign_Node()
 {
@@ -697,11 +703,8 @@ NameExp_Node::NameExp_Node(Exp_Node *exp, Token_Node *id)
     this->id = id;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 NameExp_Node::~NameExp_Node()
 {
@@ -715,11 +718,8 @@ PointerValueExp_Node::PointerValueExp_Node(Exp_Node *exp, Token_Node *id)
     this->id = id;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 PointerValueExp_Node::~PointerValueExp_Node()
 {
@@ -732,11 +732,8 @@ AddressValue_Node::AddressValue_Node(Exp_Node *exp)
     this->exp = exp;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 AddressValue_Node::~AddressValue_Node()
 {
@@ -748,11 +745,8 @@ PointerValue_Node::PointerValue_Node(Exp_Node *exp)
     this->exp = exp;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 PointerValue_Node::~PointerValue_Node()
 {
@@ -765,11 +759,8 @@ Array_Node::Array_Node(Exp_Node *exp, ExpList_Node *explist)
     this->explist = explist;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 Array_Node::~Array_Node()
 {
@@ -783,11 +774,8 @@ Call_Node::Call_Node(Token_Node *id, ExpList_Node *explist)
     this->explist = explist;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 Call_Node::~Call_Node()
 {
@@ -802,11 +790,8 @@ RelationalOP_Node::RelationalOP_Node(Exp_Node *exp1, Exp_Node *exp2)
     this->exp2 = exp2;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 RelationalOP_Node::~RelationalOP_Node()
 {
@@ -822,11 +807,8 @@ AdditionOP_Node::AdditionOP_Node(Exp_Node *exp1, Exp_Node *exp2)
     this->exp2 = exp2;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 AdditionOP_Node::~AdditionOP_Node()
 {
@@ -842,11 +824,8 @@ MultiplicationOP_Node::MultiplicationOP_Node(Token_Node *op, Exp_Node *exp1, Exp
     this->exp2 = exp2;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 MultiplicationOP_Node::~MultiplicationOP_Node()
 {
@@ -861,10 +840,7 @@ BooleanOP_Node::BooleanOP_Node(Exp_Node *exp1, Exp_Node *exp2)
     this->exp1 = exp1;
     this->exp2 = exp2;
 
-    this->setLValue(false);
-    this->setPointer(false);
     this->setTypeLexeme(nullptr);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
 }
 BooleanOP_Node::~BooleanOP_Node()
@@ -880,10 +856,7 @@ BitwiseOP_Node::BitwiseOP_Node(Exp_Node *exp1, Exp_Node *exp2)
     this->exp1 = exp1;
     this->exp2 = exp2;
 
-    this->setLValue(false);
-    this->setPointer(false);
     this->setTypeLexeme(nullptr);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
 }
 BitwiseOP_Node::~BitwiseOP_Node()
@@ -898,11 +871,8 @@ Sign_Node::Sign_Node(Exp_Node *exp)
     this->exp = exp;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 Sign_Node::~Sign_Node()
 {
@@ -914,11 +884,8 @@ Not_Node::Not_Node(Exp_Node *exp)
     this->exp = exp;
 
     this->setType(0);
-    this->setArraySize(0);
     this->setLexeme(nullptr);
     this->setTypeLexeme(nullptr);
-    this->setLValue(false);
-    this->setPointer(false);
 }
 Not_Node::~Not_Node()
 {
@@ -999,4 +966,28 @@ Function_Node::~Function_Node()
     delete this->varlist;
     delete this->stmtlist;
     delete this->params;
+}
+
+Primary_Node::Primary_Node(Token_Node *token)
+{
+    this->token = token;
+    this->exp = nullptr;
+
+    this->setType(0);
+    this->setTypeLexeme(nullptr);
+    this->setLexeme(nullptr);
+}
+Primary_Node::Primary_Node(Exp_Node *exp)
+{
+    this->exp = exp;
+    this->token = nullptr;
+
+    this->setType(0);
+    this->setTypeLexeme(nullptr);
+    this->setLexeme(nullptr);
+}
+Primary_Node::~Primary_Node()
+{
+    delete this->token;
+    delete this->exp;
 }
