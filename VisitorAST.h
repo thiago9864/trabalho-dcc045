@@ -45,6 +45,7 @@ class Not_Node;
 class Sign_Node;
 class Params_Node;
 class Function_Node;
+class Primary_Node;
 
 class Visitor
 {
@@ -92,6 +93,7 @@ public:
     virtual void visit(Sign_Node *node) = 0;
     virtual void visit(Params_Node *node) = 0;
     virtual void visit(Function_Node *node) = 0;
+    virtual void visit(Primary_Node *node) = 0;
 };
 
 class Print_AST : public Visitor
@@ -149,6 +151,7 @@ public:
     void visit(Sign_Node *node) override;
     void visit(Params_Node *node) override;
     void visit(Function_Node *node) override;
+    void visit(Primary_Node *node) override;
 };
 
 class Root_Node
@@ -421,29 +424,19 @@ class Exp_Node : public Stmt_Node
 {
 private:
     int type;
-    int arraySize;
     const char *lexeme;
     const char *typeLexeme;
-    bool lValue;
-    bool pointer;
 
 public:
     Exp_Node(){};
 
     inline void setType(int type) { this->type = type; }
-    inline void setArraySize(int arraySize) { this->arraySize = arraySize; }
     inline void setTypeLexeme(const char *typeLexeme) { this->typeLexeme = typeLexeme; }
     inline void setLexeme(const char *lexeme) { this->lexeme = lexeme; }
-    inline void setLValue(bool lValue) { this->lValue = lValue; }
-    inline void setPointer(bool pointer) { this->pointer = pointer; }
 
     inline int getType() const { return type; }
-    inline int getArraySize() const { return arraySize; }
     inline const char *getTypeLexeme() const { return typeLexeme; }
     inline const char *getLexeme() const { return lexeme; }
-
-    inline bool isLValue() const { return lValue; }
-    inline bool isPointer() const { return pointer; }
 
     void accept(Visitor *v) { v->visit(this); };
 };
@@ -730,16 +723,13 @@ class Token_Node : public Exp_Node
 {
 private:
     int token;
-    const char *lexeme;
 
 public:
     Token_Node(int token, const char *lexeme);
 
     inline void setToken(int token) { this->token = token; }
-    inline void setLexeme(const char *lexeme) { this->lexeme = lexeme; };
 
     inline int getToken() { return token; }
-    inline const char *getLexeme() { return lexeme; }
 
     virtual void accept(Visitor *v) override { v->visit(this); };
 };
@@ -780,7 +770,7 @@ private:
 public:
     Params_Node(Token_Node *id, Type_Node *type, Pointer_Node *pointer, Array_Node *array, Params_Node *next);
 
-    ~Params_Node() override;
+    ~Params_Node();
 
     inline Token_Node *Id() { return id; }
     inline Type_Node *getType() { return type; }
@@ -811,6 +801,23 @@ public:
     inline Params_Node *getParam() { return params; };
 
     inline void accept(Visitor *v) override { v->visit(this); };
+};
+
+class Primary_Node : public Exp_Node
+{
+private:
+    Token_Node *token;
+    Exp_Node *exp;
+
+public:
+    explicit Primary_Node(Token_Node *token);
+    explicit Primary_Node(Exp_Node *exp);
+    ~Primary_Node();
+
+    inline Token_Node *getToken() { return token; }
+    inline Exp_Node *getExp() { return exp; }
+
+    inline void accept(Visitor *visitor) override { visitor->visit(this); }
 };
 
 #endif // VISITOR_H

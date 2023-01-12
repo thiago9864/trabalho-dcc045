@@ -134,7 +134,7 @@ Program_Node *RDParser::Program(FunctionList_Node *functionlist, TypeList_Node *
 
         Root_Node *node = FatoraPg(id, type, pointer, varlist);
 
-        if (node != nullptr && typeid(*node) == typeid(Function_Node))
+        if (typeid(*node) == typeid(Function_Node))
         {
             Function_Node *func = (Function_Node *)node;
 
@@ -143,8 +143,8 @@ Program_Node *RDParser::Program(FunctionList_Node *functionlist, TypeList_Node *
             Program_Node *programNode = new Program_Node(functionlist, typelist, varlist);
             return programNode;
         }
-
-        varlist = (VarList_Node *)node;
+        else
+            varlist = (VarList_Node *)node;
 
         return Program(functionlist, typelist, varlist);
     }
@@ -193,7 +193,7 @@ TypeList_Node *RDParser::TypeDecl(TypeList_Node *typeDecl)
     }
     default:
         defaultError(sync_TypeDecl);
-        return typeDecl;
+        return nullptr;
     }
 }
 
@@ -718,9 +718,12 @@ Stmt_Node *RDParser::Stmt()
     switch (lookAhead)
     {
     case ID:
+    {
         // Stmt ::= id FatoraStmt
+        Token_Node *id = new Token_Node(ID, getLexeme());
         matchOrSkip(ID, sync_Stmt);
         return FatoraStmt();
+    }
     case LBRACE:
     {
         // Stmt ::= { StmtList }
@@ -1610,9 +1613,13 @@ Exp_Node *RDParser::Primary()
     switch (lookAhead)
     {
     case ID:
+    {
         // Primary ::= id PrimaryFatora
+        Token_Node *id = new Token_Node(ID, getLexeme());
+        id->setType(ID);
         matchOrSkip(ID, sync_Primary);
         return PrimaryFatora();
+    }
     case MULT:
     {
         // Primary ::= * id
@@ -1627,17 +1634,18 @@ Exp_Node *RDParser::Primary()
     case NUM_INT:
     {
         // Primary ::= num_int
-        Exp_Node *exp = new Exp_Node();
-        exp->setType(NUM_INT);
-        exp->setLexeme(getLexeme());
+        Token_Node *integer = new Token_Node(NUM_REAL, getLexeme());
+        integer->setType(INTEGER);
         matchOrSkip(NUM_INT, sync_Primary);
+
+        Exp_Node *exp = new Primary_Node(integer);
+        exp->setType(NUM_INT);
         return exp;
     }
     case LPAREN:
     {
         // Primary ::= ( Expr )
         matchOrSkip(LPAREN, sync_Primary);
-
         Exp_Node *exp = Expr();
         matchOrSkip(RPAREN, sync_Primary);
         return exp;
@@ -1645,55 +1653,71 @@ Exp_Node *RDParser::Primary()
     case AMP:
     {
         // Primary ::= & id
+        Token_Node *amp = new Token_Node(AMP, getLexeme());
         matchOrSkip(AMP, sync_Primary);
 
-        Exp_Node *exp = new Exp_Node();
+        Exp_Node *exp = new Primary_Node(amp);
         exp->setType(ID);
         exp->setLexeme(getLexeme());
         matchOrSkip(ID, sync_Primary);
-        return exp;
+
+        AddressValue_Node *address = new AddressValue_Node(exp);
+        return address;
     }
     case NUM_REAL:
     {
         // Primary ::= num_real
-        Exp_Node *exp = new Exp_Node();
-        exp->setType(NUM_REAL);
-        exp->setLexeme(getLexeme());
+        Token_Node *real = new Token_Node(NUM_REAL, getLexeme());
+        real->setType(FLOAT);
         matchOrSkip(NUM_REAL, sync_Primary);
+
+        Exp_Node *exp = new Primary_Node(real);
+        exp->setType(NUM_REAL);
         return exp;
     }
     case LITERAL:
     {
         // Primary ::= literal
-        Exp_Node *exp = new Exp_Node();
-        exp->setType(LITERAL);
-        exp->setLexeme(getLexeme());
+        Token_Node *literal = new Token_Node(LITERAL, getLexeme());
+        literal->setType(CHAR);
         matchOrSkip(LITERAL, sync_Primary);
+
+        Exp_Node *exp = new Primary_Node(literal);
+        exp->setType(LITERAL);
         return exp;
     }
     case ASCII:
     {
         // Primary ::= ascii
-        Exp_Node *exp = new Exp_Node();
-        exp->setType(ASCII);
-        exp->setLexeme(getLexeme());
+        Token_Node *ascii = new Token_Node(ASCII, getLexeme());
         matchOrSkip(ASCII, sync_Primary);
+
+        Exp_Node *exp = new Primary_Node(ascii);
+        exp->setType(ASCII);
         return exp;
     }
     case TRUE:
     {
         // Primary ::= true
-        Exp_Node *exp = new Exp_Node();
-        exp->setType(TRUE);
+        Token_Node *boolean = new Token_Node(TRUE, nullptr);
+        boolean->setType(BOOL);
+        boolean->setLexeme(getLexeme());
         matchOrSkip(TRUE, sync_Primary);
+
+        Exp_Node *exp = new Primary_Node(boolean);
+        exp->setType(TRUE);
         return exp;
     }
     case FALSE:
     {
         // Primary ::= false
-        Exp_Node *exp = new Exp_Node();
-        exp->setType(FALSE);
+        Token_Node *boolean = new Token_Node(FALSE, nullptr);
+        boolean->setType(BOOL);
+        boolean->setLexeme(getLexeme());
+
         matchOrSkip(FALSE, sync_Primary);
+        Exp_Node *exp = new Primary_Node(boolean);
+        exp->setType(FALSE);
         return exp;
     }
     default:
