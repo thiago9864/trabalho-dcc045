@@ -1,0 +1,138 @@
+Program ::= TypeDecl Program
+Program ::= Type Pointer id FatoraPg Program
+Program ::= ''
+
+TypeDecl ::= typedef struct { Type IdList ; VarDecl } id ;
+
+FatoraPg ::=  Array IdList ;
+FatoraPg  ::=  FunctionDecl
+
+IdList ::= Pointer id Array IdList
+IdList ::= , Pointer id Array  IdList
+IdList ::= ''
+
+Pointer ::= *
+Pointer ::= ''
+
+Type    ::=  id
+Type    ::=  TypePure
+
+TypePure    ::=  int
+TypePure    ::=  long
+TypePure    ::=  float
+TypePure    ::=  bool
+TypePure    ::=  char
+TypePure    ::=  double
+
+Array   ::=   [ num_int ] Array 
+Array  ::=   ''
+
+VarDecl   ::=  Type IdList ; VarDecl
+VarDecl   ::=  ''
+
+Params ::= Type Pointer id Array Params
+Params ::= , Type Pointer id Array Params
+Params ::= ''
+
+FunctionDecl ::=  ( Params ) { StmtList }
+
+StmtList   ::=  Stmt StmtListK
+StmtListK  ::=  StmtList
+StmtListK  ::=  ''
+
+CaseBlock     ::=   case num_int : CaseBlockL
+CaseBlockL    ::=   CaseBlock  
+CaseBlockL    ::=   StmtList CaseBlockF 
+CaseBlockF    ::=   CaseBlock
+CaseBlockF    ::=   ''
+
+Stmt      ::=   if ( Expr ) { StmtList } IfOpt 
+Stmt      ::=   while ( Expr ) Stmt
+Stmt      ::=   switch ( Expr ) { CaseBlock }
+Stmt      ::=   break ;
+Stmt      ::=   print ( ExprList ) ;
+Stmt      ::=   readln ( Expr ) ;
+Stmt      ::=   return Expr ;
+Stmt      ::=   throw ;
+Stmt      ::=   { StmtList }
+Stmt      ::=   try Stmt catch ( ... ) Stmt
+Stmt      ::=   id FatoraStmt
+Stmt      ::=   TypePure IdList ;
+Stmt      ::=   * id = Expr ;
+Stmt      ::=   & id = Expr ;
+
+FatoraStmt ::= ArrayAcesso = Expr ;
+FatoraStmt ::= IdList ;
+FatoraStmt ::= ( ExprList ) ;
+
+
+IfOpt         ::=   else ElseOpt
+IfOpt         ::=   ''
+
+ElseOpt       ::=  if ( Expr ) { StmtList } IfOpt
+ElseOpt       ::=  { StmtList }  
+
+ArrayAcesso   ::=   [ Expr ] ArrayAcesso
+ArrayAcesso   ::=   ''
+
+ExprList ::=  Expr ExprListTail 
+ExprList ::= ''
+
+ExprListTail ::= , Expr ExprListTail 
+ExprListTail ::= ''
+
+Expr      ::=   Expr1 ExprL
+ExprL     ::=   = Expr 
+ExprL     ::=   ''
+       
+Expr1     ::=   Expr2 Expr1L
+Expr1L    ::=   || Expr1
+Expr1L    ::=  ''
+       
+Expr2     ::=   Expr3 Expr2L 
+Expr2L    ::=   && Expr2
+Expr2L    ::=   ''
+       
+Expr3     ::=   Expr4 Expr3L
+Expr3L    ::=   == Expr3
+Expr3L    ::=   != Expr3
+Expr3L    ::=   ''
+       
+Expr4     ::=   Expr5 Expr4L
+Expr4L    ::=   < Expr4
+Expr4L    ::=   <= Expr4
+Expr4L    ::=   >= Expr4
+Expr4L    ::=   > Expr4
+Expr4L    ::=   ''
+       
+Expr5     ::=   Expr6 Expr5L
+Expr5L    ::=   + Expr5
+Expr5L    ::=   - Expr5
+Expr5L    ::=   | Expr5
+Expr5L    ::=   ''
+       
+Expr6     ::=   Expr7 Expr6L
+Expr6L    ::=   * Expr6
+Expr6L    ::=   / Expr6
+Expr6L    ::=   % Expr6
+Expr6L    ::=   & Expr6
+Expr6L    ::=   ''
+       
+Expr7     ::=   - Expr7
+Expr7     ::=   + Expr7
+Expr7     ::=   ! Expr7
+Expr7     ::=   Primary
+                    
+Primary   ::=  id PrimaryFatora
+Primary   ::=  num_int
+Primary   ::=  num_real
+Primary   ::=  literal
+Primary   ::=  ascii
+Primary   ::=  ( Expr ) 
+Primary   ::=  true 
+Primary   ::=  false 
+Primary   ::=  & id
+Primary   ::=  * id
+
+PrimaryFatora   ::= ArrayAcesso
+PrimaryFatora   ::= ( ExprList )

@@ -8,6 +8,7 @@ int main (int *id, int id)
     int j;
     bool teste;
     int k;
+    TypeTest stTest;
     i = 0;
     while (k < i + 10)
     {
@@ -15,7 +16,9 @@ int main (int *id, int id)
         teste = false;
         while (i < j - 5 - k) {
             k = k + i;
-        }            
+            stTest.a = 1.5;
+        }   
+        stTest.b = 7;         
     }
 
     if(teste2[2] > teste){

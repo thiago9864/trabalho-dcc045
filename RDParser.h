@@ -5,8 +5,10 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <typeinfo>
 #include "LexicalAnalyzer.h"
 #include "ErrorManager.h"
+#include "VisitorAST.h"
 
 class RDParser
 {
@@ -14,173 +16,137 @@ private:
     int lookAhead;
 
     void nextToken();
-    void match(int token);
     void matchOrSkip(int token, const int *syncArr);
 
     void writeError(int expectedToken);
+    void defaultError(const int *syncArr);
     void syncError(const int *syncArr);
 
     // Functions of nonterminals
     static int sync_Program[];
-    void Program();
-
-    static int sync_Type[];
-    void Type();
-
-    static int sync_IdList[];
-    void IdList();
-
-    static int sync_IdListK2[];
-    void IdListK2();
-
-    static int sync_IdListK3[];
-    void IdListK3();
-
-    static int sync_Array[];
-    void Array();
+    Program_Node *Program(FunctionList_Node *functionlist, TypeList_Node *typelist, VarList_Node *varlist);
 
     static int sync_TypeDecl[];
-    void TypeDecl();
+    TypeList_Node *TypeDecl(TypeList_Node *typeDecl);
 
-    static int sync_VarFn[];
-    void VarFn();
+    static int sync_FatoraPg[];
+    Root_Node *FatoraPg(Token_Node *id, Type_Node *type, Pointer_Node *pointer, VarList_Node *varlist);
 
-    static int sync_VarFnK[];
-    void VarFnK();
+    static int sync_IdList[];
+    NameDecl_Node *IdList();
 
-    static int sync_VarFnL[];
-    void VarFnL();
+    static int sync_Pointer[];
+    Pointer_Node *Pointer();
+
+    static int sync_Type[];
+    Type_Node *Type();
+
+    static int sync_TypePure[];
+    Type_Node *TypePure();
+
+    static int sync_Array[];
+    Array_Node *Array();
 
     static int sync_VarDecl[];
-    void VarDecl();
+    VarList_Node *VarDecl();
 
-    static int sync_VarDeclK[];
-    void VarDeclK();
+    static int sync_Params[];
+    Params_Node *Params();
 
     static int sync_FunctionDecl[];
-    void FunctionDecl();
-
-    static int sync_FunctionDeclK[];
-    void FunctionDeclK();
-
-    static int sync_FunctionDeclL[];
-    void FunctionDeclL();
-
-    static int sync_FormalRest[];
-    void FormalRest();
-
-    static int sync_FormalRestK[];
-    void FormalRestK();
-
-    static int sync_FormalList[];
-    void FormalList();
-
-    static int sync_FormalListK[];
-    void FormalListK();
-
-    static int sync_FunctionBody[];
-    void FunctionBody();
-
-    static int sync_FunctionBodyL[];
-    void FunctionBodyL();
-
-    static int sync_ExprList[];
-    void ExprList();
-
-    static int sync_ExprListTail[];
-    void ExprListTail();
-
-    static int sync_ExprListTailL[];
-    void ExprListTailL();
+    Function_Node *FunctionDecl(Token_Node *id, Type_Node *type, Pointer_Node *pointer, VarList_Node *varlist);
 
     static int sync_StmtList[];
-    void StmtList();
+    StmtList_Node *StmtList();
 
     static int sync_StmtListK[];
-    void StmtListK();
-
-    static int sync_StmtList2[];
-    void StmtList2();
-
-    static int sync_StmtList2K[];
-    void StmtList2K();
+    StmtList_Node *StmtListK();
 
     static int sync_CaseBlock[];
-    void CaseBlock();
+    CaseBlock_Node *CaseBlock();
 
     static int sync_CaseBlockL[];
-    void CaseBlockL();
+    CaseBlock_Node *CaseBlockL(Token_Node *token);
+
+    static int sync_CaseBlockF[];
+    CaseBlock_Node *CaseBlockF();
 
     static int sync_Stmt[];
-    void Stmt();
+    Stmt_Node *Stmt();
 
-    static int sync_Stmt2[];
-    void Stmt2();
+    static int sync_FatoraStmt[];
+    Stmt_Node *FatoraStmt();
 
     static int sync_IfOpt[];
-    void IfOpt();
+    Stmt_Node *IfOpt();
 
     static int sync_ElseOpt[];
-    void ElseOpt();
+    Stmt_Node *ElseOpt();
 
-    static int sync_ExpSemID[];
-    void ExpSemID();
+    static int sync_ArrayAcesso[];
+    Exp_Node *ArrayAcesso();
 
-    static int sync_ExpSemIDL[];
-    void ExpSemIDL();
+    static int sync_ExprList[];
+    ExpList_Node *ExprList();
+
+    static int sync_ExprListTail[];
+    ExpList_Node *ExprListTail();
 
     static int sync_Expr[];
-    void Expr();
+    Exp_Node *Expr();
 
     static int sync_ExprL[];
-    void ExprL();
+    Exp_Node *ExprL();
 
     static int sync_Expr1[];
-    void Expr1();
+    Exp_Node *Expr1();
 
     static int sync_Expr1L[];
-    void Expr1L();
+    Exp_Node *Expr1L();
 
     static int sync_Expr2[];
-    void Expr2();
+    Exp_Node *Expr2();
 
     static int sync_Expr2L[];
-    void Expr2L();
+    Exp_Node *Expr2L();
 
     static int sync_Expr3[];
-    void Expr3();
+    Exp_Node *Expr3();
 
     static int sync_Expr3L[];
-    void Expr3L();
+    Exp_Node *Expr3L();
 
     static int sync_Expr4[];
-    void Expr4();
+    Exp_Node *Expr4();
 
     static int sync_Expr4L[];
-    void Expr4L();
+    Exp_Node *Expr4L();
 
     static int sync_Expr5[];
-    void Expr5();
+    Exp_Node *Expr5();
 
     static int sync_Expr5L[];
-    void Expr5L();
+    Exp_Node *Expr5L();
 
     static int sync_Expr6[];
-    void Expr6();
+    Exp_Node *Expr6();
 
     static int sync_Expr6L[];
-    void Expr6L();
+    Exp_Node *Expr6L();
 
     static int sync_Expr7[];
-    void Expr7();
+    Exp_Node *Expr7();
 
     static int sync_Primary[];
-    void Primary();
+    Exp_Node *Primary();
 
-    static int sync_PrimaryL[];
-    void PrimaryL();
+    static int sync_PrimaryFatora[];
+    Exp_Node *PrimaryFatora();
 
 public:
+    Program_Node *root;
+    Print_AST *visitor;
+
     RDParser();
     ~RDParser();
 

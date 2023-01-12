@@ -172,7 +172,7 @@ static char getNextChar()
     }
 
     char c = fileChunkBuffer[fileChunkReadPos++];
-
+    manageCursorPosition();
     return c;
 }
 
@@ -215,10 +215,12 @@ static void clearLexeme()
 
 static void manageCursorPosition()
 {
-    if (currentChar == '\n')
+    //printf("%c", currentChar);
+    if (currentChar == '\r\n' || currentChar == '\r' || currentChar == '\n')
     {
         sourceCodeLine++;
         sourceCodeColumn = 1;
+        //printf("%d", sourceCodeLine);
     }
     else
     {
@@ -265,7 +267,7 @@ int getNextToken()
             if (isspace(currentChar)) // Checks for [' ' \t \n \v \f \r].
             {
                 // Stay in this state for the next char
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else if (isalpha(currentChar)) // Checks for [a-zA-Z]
@@ -274,14 +276,14 @@ int getNextToken()
                 dfaState = 1;
 
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else if (isdigit(currentChar)) // Checks for [0-9]
             {
                 dfaState = 28;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else if (currentChar == EOF)
@@ -370,14 +372,14 @@ int getNextToken()
                     // Other - ERROR: Invalid character
                     dfaState = 66;
                 }
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
         case 1:
             if (isalpha(currentChar) || isdigit(currentChar)) // Checks if is [a-zA-Z0-9].
             {
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else
@@ -419,7 +421,7 @@ int getNextToken()
             if (currentChar == '>')
             {
                 dfaState = 7;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -475,7 +477,7 @@ int getNextToken()
             {
                 dfaState = 16;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -492,12 +494,12 @@ int getNextToken()
             {
                 dfaState = 17;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (isdigit(currentChar))
             {
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else
@@ -511,19 +513,19 @@ int getNextToken()
             {
                 dfaState = 18;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (isdigit(currentChar))
             {
                 dfaState = 19;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 22;
                 notConsumeChar = 1;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 18:
@@ -531,20 +533,20 @@ int getNextToken()
             {
                 dfaState = 19;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 21;
                 notConsumeChar = 1;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 19:
             if (isdigit(currentChar))
             {
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else
@@ -577,25 +579,25 @@ int getNextToken()
             {
                 dfaState = 18;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == '+')
             {
                 dfaState = 24;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (isdigit(currentChar))
             {
                 dfaState = 25;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 22;
                 notConsumeChar = 1;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 24:
@@ -603,20 +605,20 @@ int getNextToken()
             {
                 dfaState = 25;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 21;
                 notConsumeChar = 1;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 25:
             if (isdigit(currentChar))
             {
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else
@@ -635,7 +637,7 @@ int getNextToken()
             {
                 dfaState = 25;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -648,18 +650,18 @@ int getNextToken()
             {
                 dfaState = 29;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == 'e' || currentChar == 'E')
             {
                 dfaState = 23;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (isdigit(currentChar))
             {
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
                 break;
             }
             else
@@ -674,13 +676,13 @@ int getNextToken()
             {
                 dfaState = 27;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (isdigit(currentChar))
             {
                 dfaState = 16;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -698,7 +700,7 @@ int getNextToken()
             {
                 dfaState = 31;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == EOF)
             {
@@ -708,13 +710,13 @@ int getNextToken()
             {
                 dfaState = 36;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 37;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 31:
@@ -728,7 +730,7 @@ int getNextToken()
             {
                 dfaState = 31;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == EOF)
             {
@@ -738,12 +740,12 @@ int getNextToken()
             {
                 dfaState = 33;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 33:
@@ -751,7 +753,7 @@ int getNextToken()
             {
                 dfaState = 32;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == EOF)
             {
@@ -761,7 +763,7 @@ int getNextToken()
             {
                 dfaState = 35;
                 notConsumeChar = 1;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 34:
@@ -782,7 +784,7 @@ int getNextToken()
             {
                 dfaState = 30;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == EOF)
             {
@@ -791,7 +793,7 @@ int getNextToken()
             else
             {
                 dfaState = 35;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             // If not match with any of the conditions, is other and loop
             // in this state
@@ -801,12 +803,12 @@ int getNextToken()
             {
                 dfaState = 31;
                 buildLexeme(currentChar);
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 68;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
 
@@ -840,7 +842,7 @@ int getNextToken()
             {
                 dfaState = 0;
                 clearLexeme();
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == EOF)
             {
@@ -853,12 +855,12 @@ int getNextToken()
             if (currentChar == '*')
             {
                 dfaState = 46;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == '/')
             {
                 dfaState = 43;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -874,7 +876,7 @@ int getNextToken()
             if (currentChar == '*')
             {
                 dfaState = 48;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else if (currentChar == EOF)
             {
@@ -882,7 +884,7 @@ int getNextToken()
             }
             else
             {
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
         case 47:
@@ -900,12 +902,12 @@ int getNextToken()
             {
                 dfaState = 0;
                 clearLexeme();
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
                 dfaState = 46;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             break;
 
@@ -920,7 +922,7 @@ int getNextToken()
             if (currentChar == '&')
             {
                 dfaState = 51;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -944,7 +946,7 @@ int getNextToken()
             if (currentChar == '=')
             {
                 dfaState = 55;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -964,7 +966,7 @@ int getNextToken()
             if (currentChar == '=')
             {
                 dfaState = 59;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -984,7 +986,7 @@ int getNextToken()
             if (currentChar == '=')
             {
                 dfaState = 62;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
@@ -1005,7 +1007,7 @@ int getNextToken()
             if (currentChar == '|')
             {
                 dfaState = 65;
-                manageCursorPosition();
+                //manageCursorPosition();
             }
             else
             {
